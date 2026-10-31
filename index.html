@@ -80,6 +80,7 @@ td.t{text-align:left}
 td.t div{display:flex;align-items:center;gap:7px;min-width:0}
 td.t img{width:20px;height:20px;object-fit:contain;flex:none}
 td.t span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+@media(max-width:420px){table.std th,table.std td{padding:8px 2px;font-size:12px}table.std td.t span{max-width:84px}table.std td.t img{width:18px;height:18px}table.std td.gl{white-space:nowrap}}
 td.p{font-weight:800}
 td.pos{width:28px;font-weight:700;position:relative}
 td.pos::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:2px;background:var(--z,transparent)}
@@ -578,10 +579,10 @@ async function viewTabla(){
     const notes = new Map();
     st.groups.forEach(g => {
       g.rows.forEach(r => r.note && notes.set(r.note, r.color));
-      html += `${multi ? `<div class="grp">${esc(grpName(g.name))}</div>` : ''}<table><thead><tr><th>#</th><th style="text-align:left">Equipo</th><th>PJ</th><th class="hide-s">G</th><th class="hide-s">E</th><th class="hide-s">P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead><tbody>
+      html += `${multi ? `<div class="grp">${esc(grpName(g.name))}</div>` : ''}<table class="std"><thead><tr><th>#</th><th style="text-align:left">Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>Goles</th><th>DG</th><th>Pts</th></tr></thead><tbody>
       ${g.rows.map(r => `<tr class="click ${isFav(r.id)?'fav':''}" data-team="${r.id}"><td class="pos" style="--z:${r.color?('#'+r.color.replace('#','')):'transparent'}">${r.pos||''}</td>
         <td class="t"><div><img src="${esc(r.logo)}" alt="" loading="lazy"><span>${esc(r.name)}</span>${isFav(r.id)?'⭐':''}</div></td>
-        <td>${r.pj}</td><td class="hide-s">${r.g}</td><td class="hide-s">${r.em}</td><td class="hide-s">${r.p}</td><td>${r.gf}</td><td>${r.gc}</td><td>${r.dg}</td><td class="p">${r.pts}</td></tr>`).join('')}
+        <td>${r.pj}</td><td>${r.g}</td><td>${r.em}</td><td>${r.p}</td><td class="gl">${r.gf}:${r.gc}</td><td>${r.dg}</td><td class="p">${r.pts}</td></tr>`).join('')}
       </tbody></table>`;
     });
     html += `<div class="legend">${[...notes].map(([n,col]) => `<span><i style="background:#${String(col).replace('#','')}"></i>${esc(n)}</span>`).join('')}</div>
