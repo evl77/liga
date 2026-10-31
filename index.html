@@ -930,7 +930,7 @@ async function viewNews(){
     const d = await cached('news:'+S.newsTab, 600000, () => get('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(`https://e00-marca.uecdn.es/rss/${S.newsTab}.xml`)));
     if(d.status !== 'ok') throw new Error(d.message || 'Noticias no disponibles');
     const dec = s => { const el = document.createElement('textarea'); el.innerHTML = s || ''; return el.value };
-    const txt = s => { const el = document.createElement('div'); el.innerHTML = dec(s); return dec(el.textContent).replace(/\s+/g,' ').trim() };
+    const txt = s => { const el = document.createElement('div'); el.innerHTML = dec(s); return dec(el.textContent).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim() };
     $('#nbody').innerHTML = (d.items || []).map(it => {
       const desc = txt(it.description); const t = new Date(it.pubDate.replace(' ', 'T') + 'Z');
       const ago = isNaN(t) ? '' : (() => { const m = Math.round((Date.now() - t) / 60000); return m < 60 ? `hace ${Math.max(m,1)} min` : m < 1440 ? `hace ${Math.round(m/60)} h` : fmtShort(t) })();
