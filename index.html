@@ -165,23 +165,26 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const isFav = id => S.favs.some(f => String(f.id) === String(id));
 
-// Conexión directa y, si el navegador la bloquea, a través de pasarelas públicas
-const ROUTES = [u => u, u => 'https://corsproxy.io/?url=' + encodeURIComponent(u), u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u)];
-let routeOk = +(sessionStorage.getItem('route') || 0);
 async function get(url){
   let last;
-  for(let i = 0; i < ROUTES.length; i++){
-    const k = (routeOk + i) % ROUTES.length;
+  for(let i = 0; i < 2; i++){
     try{
-      const r = await fetch(ROUTES[k](url), {cache:'no-store'});
+      const r = await fetch(url, {cache:'no-store'});
       if(!r.ok) throw new Error('HTTP ' + r.status);
-      const j = await r.json();
-      if(k !== routeOk){ routeOk = k; sessionStorage.setItem('route', k) }
-      return j;
-    }catch(e){ last = e }
+      return await r.json();
+    }catch(e){ last = e; await new Promise(r => setTimeout(r, 600)) }
   }
   throw new Error((last && last.message) || 'Sin conexión con la fuente de datos');
 }
+// La fuente solo acepta días sueltos: se pide cada día y se juntan
+async function sbDays(lg, days){
+  const res = await Promise.allSettled(days.map(d => get(`${API}${lg}/scoreboard?dates=${ymd(d)}`)));
+  if(res.every(r => r.status === 'rejected')) throw res[0].reason;
+  const seen = new Map();
+  res.forEach(r => r.status === 'fulfilled' && (r.value.events||[]).forEach(e => seen.set(e.id, e)));
+  return [...seen.values()];
+}
+function daysOf(a, b){ const out = []; const d = new Date(a); while(d <= b){ out.push(new Date(d)); d.setDate(d.getDate()+1) } return out }
 
 /* ---------- fechas ---------- */
 function ymd(d){ return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0') }
@@ -201,9 +204,7 @@ function norm(ev){
   const h = c.competitors?.find(x => x.homeAway === 'home') || c.competitors?.[0] || {};
   const a = c.competitors?.find(x => x.homeAway === 'away') || c.competitors?.[1] || {};
   const st = ev.status?.type || c.status?.type || {};
-  const tv = new Set();
-  (c.broadcasts||[]).forEach(b => (b.names||[]).forEach(n => tv.add(n)));
-  (c.geoBroadcasts||[]).forEach(b => b.media?.shortName && tv.add(b.media.shortName));
+  const tv = new Set(); // la fuente solo trae cadenas de EE. UU.
   const team = t => ({id:t.team?.id, name:t.team?.shortDisplayName || t.team?.displayName || '', full:t.team?.displayName || '', logo:t.team?.logo || t.team?.logos?.[0]?.href || '', score:t.score ?? ''});
   return {
     id: ev.id, date: ev.date, state: st.state, detail: st.shortDetail || st.detail || '',
@@ -221,8 +222,7 @@ async function viewPartidos(){
   $('#wp').onclick = () => { S.week--; render() };
   $('#wn').onclick = () => { S.week++; render() };
   try{
-    const d = await get(`${API}${S.league}/scoreboard?dates=${ymd(mon)}-${ymd(sun)}&limit=100`);
-    const evs = (d.events||[]).map(norm).sort((x,y) => new Date(x.date) - new Date(y.date));
+    const evs = (await sbDays(S.league, daysOf(mon, sun))).map(norm).sort((x,y) => new Date(x.date) - new Date(y.date));
     if(!evs.length){ $('#list').innerHTML = `<div class="empty">No hay partidos esta semana.<br><br><button class="btn sec" id="nx">Ver siguiente semana</button></div>`; $('#nx').onclick=()=>{S.week++;render()}; return }
     let html = '', lastDay = '';
     for(const e of evs){
@@ -283,8 +283,8 @@ async function viewTabla(){
 /* ---------- vista favoritos / ajustes ---------- */
 async function getTeams(lg){
   if(S.teamsCache[lg]) return S.teamsCache[lg];
-  const d = await get(`${API}${lg}/teams`);
-  const t = (d.sports?.[0]?.leagues?.[0]?.teams||[]).map(x => x.team).map(t => ({id:t.id, name:t.shortDisplayName||t.displayName, logo:t.logos?.[0]?.href||'', league:lg}))
+  const d = await get(`${API2}${lg}/standings`);
+  const t = ((d.children?.[0]?.standings || d.standings || {}).entries||[]).map(e => e.team).map(t => ({id:t.id, name:t.shortDisplayName||t.displayName, logo:t.logos?.[0]?.href||'', league:lg}))
     .sort((a,b) => a.name.localeCompare(b.name,'es'));
   return (S.teamsCache[lg] = t);
 }
@@ -312,7 +312,7 @@ async function viewFavs(){
     <p><code id="favids">${esc(S.favs.map(f=>f.id).join(',') || '— marca algún equipo —')}</code></p>
   </div>
   ${!standalone ? `<div class="card"><h3>➕ Instalar en pantalla de inicio</h3><p>${ios ? 'Safari → botón Compartir → «Añadir a pantalla de inicio».' : 'Menú ⋮ de Chrome → «Añadir a pantalla de inicio» / «Instalar app».'}</p></div>` : ''}
-  <p class="empty" style="padding:10px;font-size:11px">Datos: API pública de ESPN. La TV indicada es la que facilita la fuente; en «Dónde verlo» de cada partido tienes la búsqueda para España.</p>`;
+  <p class="empty" style="padding:10px;font-size:11px">Datos: API pública de ESPN. La cadena de TV en España se consulta desde «Dónde verlo» en cada partido.</p>`;
   const on = $('#non'); if(on) on.onclick = enableNotif;
   const t = $('#nt'); if(t) t.onclick = () => notify('⚽ Prueba', 'Así te llegarán los goles de tus equipos');
   const off = $('#noff'); if(off) off.onclick = () => { S.notif=false; localStorage.setItem('notif','0'); render() };
@@ -363,8 +363,7 @@ function renderMatch(d, id, lg, keepTab){
   const live = st.state === 'in';
   const scoreTxt = st.state === 'pre' ? fmtHour(c.date) : `${H.score ?? 0} - ${A.score ?? 0}`;
   const venue = d.gameInfo?.venue?.fullName || '';
-  const tv = new Set(); (d.broadcasts||[]).forEach(b => { b.media?.shortName && tv.add(b.media.shortName); (b.names||[]).forEach(n=>tv.add(n)) });
-  (c.broadcasts||[]).forEach(b => b.media?.shortName && tv.add(b.media.shortName));
+  const tv = new Set();
   const q = encodeURIComponent(`dónde ver ${nm(H)} ${nm(A)} televisión España`);
   const tab = keepTab || S.detTab || 'eventos';
   $('#det').innerHTML = `
@@ -375,7 +374,7 @@ function renderMatch(d, id, lg, keepTab){
       <div><img src="${esc(logo(A))}" alt=""><div class="n">${esc(nm(A))}</div></div>
     </div>
     <div class="meta">${venue ? '🏟️ ' + esc(venue) : ''}${d.gameInfo?.attendance ? ' · ' + Number(d.gameInfo.attendance).toLocaleString('es-ES') + ' espectadores' : ''}</div>
-    <div class="meta" style="margin-top:6px">${tv.size ? '📺 ' + esc([...tv].join(' · ')) + ' · ' : ''}<a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener" style="color:var(--acc)">Dónde verlo en España ›</a></div>
+    <div class="meta" style="margin-top:6px">${tv.size ? '📺 ' + esc([...tv].join(' · ')) + ' · ' : ''}<a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener" style="color:var(--acc)">📺 Dónde verlo en España ›</a></div>
     <div class="tabs" id="dtabs">
       ${['eventos','estadísticas','alineaciones'].map(t => `<button data-t="${t}" class="${t===tab?'on':''}">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}
     </div>
@@ -412,7 +411,7 @@ function evHTML(d, H, A){
     list = det.map(x => ({min:x.clock?.displayValue||'', team:x.team?.id, type:x.type?.text||'', goal:!!x.scoringPlay, who:(x.athletesInvolved||[]).map(a=>a.displayName), text:''}));
   }
   if(!list.length) return '<div class="empty">Sin incidencias todavía.</div>';
-  const tr = t => ({'Goal':'Gol','Goal - Header':'Gol de cabeza','Penalty - Scored':'Gol de penalti','Own Goal':'Gol en propia','Yellow Card':'Amarilla','Red Card':'Roja','Substitution':'Cambio','Penalty - Missed':'Penalti fallado','Penalty - Saved':'Penalti parado'}[t] || t);
+  const tr = t => ({'Goal':'Gol','Goal - Header':'Gol de cabeza','Goal - Free-kick':'Gol de falta','Goal - Volley':'Gol de volea','Penalty - Scored':'Gol de penalti','Own Goal':'Gol en propia','Yellow Card':'Amarilla','Red Card':'Roja','Substitution':'Cambio','Penalty - Missed':'Penalti fallado','Penalty - Saved':'Penalti parado'}[t] || t);
   return list.map(e => {
     const icon = evIcon(e.type, e.text);
     const who = e.type.toLowerCase().includes('sub') && e.who.length > 1 ? `↑ ${esc(e.who[0])}<small>↓ ${esc(e.who[1])}</small>` : `${esc(e.who[0] || '')}${e.who[1] && e.goal ? `<small>Asist. ${esc(e.who[1])}</small>` : `<small>${esc(tr(e.type))}</small>`}`;
@@ -508,12 +507,10 @@ async function pollFavs(){
   let anyLive = false;
   if(S.favs.length){
     const today = new Date(), y = new Date(today); y.setDate(today.getDate()-1);
-    const range = `${ymd(y)}-${ymd(today)}`;
     const lgs = [...new Set(S.favs.map(f => f.league || 'esp.1'))];
     for(const lg of lgs){
       try{
-        const d = await get(`${API}${lg}/scoreboard?dates=${range}&limit=100`);
-        const evs = (d.events||[]).map(norm);
+        const evs = (await sbDays(lg, [y, today])).map(norm);
         checkGoals(evs);
         if(evs.some(e => e.state === 'in' && (isFav(e.home.id) || isFav(e.away.id)))) anyLive = true;
       }catch(e){}
@@ -535,8 +532,7 @@ function schedule(now, live){
 async function softRefresh(){
   const [mon, sun] = weekRange(S.week);
   try{
-    const d = await get(`${API}${S.league}/scoreboard?dates=${ymd(mon)}-${ymd(sun)}&limit=100`);
-    const evs = (d.events||[]).map(norm);
+    const evs = (await sbDays(S.league, daysOf(mon, sun))).map(norm);
     evs.forEach(e => { const el = document.querySelector(`.match[data-id="${e.id}"]`); if(el){ const tmp = document.createElement('div'); tmp.innerHTML = matchRow(e); const n = tmp.firstElementChild; n.onclick = el.onclick; el.replaceWith(n) } });
   }catch{}
 }

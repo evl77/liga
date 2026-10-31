@@ -16,10 +16,14 @@ async function ronda() {
   const hoy = new Date(), ayer = new Date(Date.now() - 864e5);
   let enJuego = false;
   for (const lg of ['esp.1', 'esp.2']) {
-    let d; try {
-      d = await (await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${lg}/scoreboard?dates=${ymd(ayer)}-${ymd(hoy)}&limit=100`)).json();
-    } catch (e) { console.log('Error ESPN', lg, e.message); continue; }
-    for (const ev of d.events || []) {
+    const eventos = [];
+    for (const dia of [ayer, hoy]) {
+      try {
+        const d = await (await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${lg}/scoreboard?dates=${ymd(dia)}`)).json();
+        eventos.push(...(d.events || []));
+      } catch (e) { console.log('Error ESPN', lg, e.message); }
+    }
+    for (const ev of eventos) {
       const c = ev.competitions?.[0]; if (!c) continue;
       const H = c.competitors.find(x => x.homeAway === 'home'), A = c.competitors.find(x => x.homeAway === 'away');
       if (!FAVS.includes(H.team.id) && !FAVS.includes(A.team.id)) continue;
