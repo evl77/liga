@@ -466,6 +466,18 @@ async function emptyReason(lg, mon, sun){
   else if(c.cup){ ic = '🏆'; title = 'Sin eliminatoria esta semana'; why.push(nextPh ? `Próxima ronda: <b>${esc(trPhase(nextPh.label))}</b> (desde el ${esc(fmtShort(nextPh.s))}).` : 'La competición no tiene ronda programada en estas fechas.') }
   else if(national){ ic = '🌍'; title = 'Sin partidos de selecciones'; why.push('Las selecciones solo juegan en las ventanas FIFA (septiembre, octubre, noviembre, marzo y junio).'); if(/q$|worldq/.test(lg)) why.push('Ahora mismo no hay una fase de clasificación en curso.') }
   else { why.push('No hay jornada programada en estas fechas.') }
+  if(!days.length){ // calendarios por fases (Europa, copas, selecciones): buscar la próxima fecha real
+    const probe = await cached('probe:'+lg+ymd(sun), 1800000, async () => {
+      for(let wk = 0; wk < 10; wk += 2){
+        const ds = []; for(const w2 of [wk, wk+1]) for(const o of [1,2,3,4,5]){ const x = new Date(sun); x.setDate(sun.getDate() + w2*7 + o); ds.push(x) }
+        const evs = await sbDays(lg, ds).catch(() => []);
+        const dt = evs.map(e => new Date(e.date)).filter(x => x > sun).sort((a,b) => a - b)[0];
+        if(dt) return dt.toISOString();
+      }
+      return null;
+    });
+    if(probe) next = new Date(probe);
+  }
   if(!next && nextPh) next = nextPh.s;
   let jump = null;
   if(next){ jump = Math.round((mondayOf(next) - mondayOf(new Date())) / (7*864e5)); why.push(`Próximos partidos: <b>${esc(fmtDay(next))}</b>.`) }
