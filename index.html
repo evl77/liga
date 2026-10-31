@@ -831,6 +831,8 @@ function trComm(t){
     [/^VAR Decision: Penalty (.+)\./i, (_, s) => `📺 VAR: penalti. ${s}.`],
     [/^VAR Decision: (.+)/i, (_, s) => `📺 Decisión VAR: ${s}`],
     [/^GOAL OVERTURNED BY VAR:\s*(.+?) \((.+?)\).*/i, (_, p, tm) => `📺 Gol anulado por el VAR a ${p} (${tm}).`],
+    [/^Fourth official has announced (\d+) minutes? of added time\./i, (_, n) => `⏱️ Se añaden ${n} minutos.`],
+    [/^Second yellow card to (.+?) \((.+?)\).*/i, (_, p, tm) => `🟥 Segunda amarilla y expulsión de ${p} (${tm}).`],
     [/^Dangerous play by (.+?) \((.+?)\)\./i, (_, p, tm) => `Juego peligroso de ${p} (${tm}).`],
   ];
   for(const [re, f] of R){ if((m = t.match(re))) return f(...m) }
@@ -1182,8 +1184,9 @@ function openSearch(){
       const v = q.value.trim(); if(v.length < 3) return;
       $('#sr').innerHTML = '<div class="spin"></div>';
       try{
-        const d = await get(`https://site.web.api.espn.com/apis/search/v2?query=${encodeURIComponent(v)}&limit=12&type=team,player`);
-        const items = (d.results || []).filter(r => r.type === 'team' || r.type === 'player').flatMap(r => (r.contents || []).map(c => ({...c, kind:r.type}))).filter(c => /s:600~/.test(c.uid || ''));
+        const [dt, dp] = await Promise.all(['team','player'].map(ty => get(`https://site.web.api.espn.com/apis/search/v2?query=${encodeURIComponent(v)}&limit=8&type=${ty}`).catch(() => ({}))));
+        const pick = (d, ty) => (d.results || []).filter(r => r.type === ty).flatMap(r => (r.contents || []).map(c => ({...c, kind:ty}))).filter(c => /s:600~/.test(c.uid || ''));
+        const items = [...pick(dt, 'team'), ...pick(dp, 'player')];
         if(!items.length) return $('#sr').innerHTML = '<div class="empty">Sin resultados.</div>';
         $('#sr').innerHTML = items.map((c, i) => `<button class="sres" data-i="${i}">${c.kind === 'team' ? `<img src="${esc(c.image?.default || '')}" alt="">` : `<span class="ph" style="width:30px;height:30px;font-size:11px">${initials(c.displayName)}</span>`}<div><b>${esc(tn(c.displayName))}</b><small>${c.kind === 'team' ? 'Equipo' : 'Jugador'} · ${esc(c.subtitle || c.description || '')}</small></div></button>`).join('');
         $('#sr').querySelectorAll('.sres').forEach(b => b.onclick = () => {
