@@ -401,7 +401,7 @@ function evIcon(type, text){
   return '•';
 }
 function evHTML(d, H, A){
-  const ke = (d.keyEvents || []).filter(e => e.team || e.scoringPlay);
+  const ke = (d.keyEvents || []).filter(e => (e.team || e.scoringPlay) && (e.participants||[]).length && !/delay|kickoff|halftime|end/i.test(e.type?.type || e.type?.text || ''));
   let list = ke.map(e => ({
     min: e.clock?.displayValue || '', team: e.team?.id, type: e.type?.text || e.type?.type || '', goal: !!e.scoringPlay,
     who: (e.participants||[]).map(p => p.athlete?.displayName).filter(Boolean), text: e.shortText || e.text || '',
@@ -430,9 +430,11 @@ function statsHTML(d, H, A){
   const names = [...STAT_ORDER.filter(n => th.statistics.some(s => s.name === n)), ...th.statistics.map(s=>s.name).filter(n => !STAT_ORDER.includes(n) && STAT_ES[n])];
   return names.map(n => {
     const sh = th.statistics.find(s => s.name === n), sa = mapA[n]; if(!sa) return '';
-    const vh = parseFloat(sh.displayValue) || 0, va = parseFloat(sa.displayValue) || 0, tot = vh + va || 1;
+    let vh = parseFloat(sh.displayValue) || 0, va = parseFloat(sa.displayValue) || 0;
+    if(n === 'passPct' && vh <= 1 && va <= 1){ vh = Math.round(vh*100); va = Math.round(va*100) }
     const pct = n.includes('Pct') ? '%' : '';
-    return `<div class="bar"><div class="lb"><b>${esc(sh.displayValue)}${pct}</b><span>${esc(STAT_ES[n] || sh.label || n)}</span><b>${esc(sa.displayValue)}${pct}</b></div>
+    const dh = n === 'passPct' ? vh : sh.displayValue, da = n === 'passPct' ? va : sa.displayValue;
+    return `<div class="bar"><div class="lb"><b>${esc(dh)}${pct}</b><span>${esc(STAT_ES[n] || sh.label || n)}</span><b>${esc(da)}${pct}</b></div>
       <div class="tr"><div style="flex:${vh||0.0001};background:${vh>=va?'var(--acc)':'var(--line)'}"></div><div style="flex:${va||0.0001};background:${va>vh?'var(--blue)':'var(--line)'}"></div></div></div>`;
   }).join('');
 }
@@ -444,7 +446,7 @@ function lineupHTML(d, H, A){
     const pl = r.roster || [];
     const row = p => {
       const subs = (p.plays||[]).length ? '' : '';
-      const extra = [p.subbedOut ? '↓' : '', p.subbedIn ? '↑' : '', ...(p.plays||[]).filter(x=>x.scoringPlay).map(()=> '⚽')].join(' ');
+      const extra = [p.subbedOut ? '↓' : '', p.subbedIn ? '↑' : ''].join(' ');
       return `<div class="pl ${p.starter?'':'sub'}"><b>${esc(p.jersey||'')}</b>${esc(p.athlete?.shortName || p.athlete?.displayName || '')}<em>${esc(p.position?.abbreviation||'')} ${extra}</em></div>`;
     };
     return `<div><h4>${esc(t.team?.shortDisplayName||'')} <small>${esc(r.formation||'')}</small></h4>
