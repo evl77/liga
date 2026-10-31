@@ -15,7 +15,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function ronda() {
   const hoy = new Date(), ayer = new Date(Date.now() - 864e5);
   let enJuego = false;
-  for (const lg of ['esp.1', 'esp.2', 'uefa.champions', 'uefa.europa']) {
+  for (const lg of ['esp.1', 'esp.2', 'esp.copa_del_rey', 'uefa.champions', 'uefa.europa']) {
     const eventos = [];
     for (const dia of [ayer, hoy]) {
       try {

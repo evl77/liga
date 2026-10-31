@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Liga en Vivo</title>
+<title>Fútbol EV</title>
 <meta name="theme-color" content="#0b1220">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Liga en Vivo">
+<meta name="apple-mobile-web-app-title" content="Fútbol EV">
 <style>
 :root{
   --bg:#0b1220;--card:#131c2e;--card2:#1a2540;--line:#24314f;--txt:#e8edf7;--mut:#8b98b4;
@@ -181,12 +181,29 @@ tr.fav td{background:rgba(250,204,21,.07)}
 .toast{position:fixed;left:16px;right:16px;bottom:calc(80px + var(--safe-b));background:var(--acc);color:#04210f;font-weight:700;padding:12px 14px;border-radius:12px;z-index:30;display:none}
 code{background:var(--card2);padding:1px 5px;border-radius:5px;font-size:12px;word-break:break-all}
 .flag{width:22px;height:15px;object-fit:cover;border-radius:2px;vertical-align:middle}
+select{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;font-size:14px;width:100%;margin-top:10px}
+.news{display:flex;gap:10px;background:var(--card);border-radius:14px;padding:10px;margin-bottom:8px;text-decoration:none;color:var(--txt)}
+.news img{width:96px;height:72px;object-fit:cover;border-radius:9px;flex:none;background:var(--card2)}
+.news b{font-size:14px;line-height:1.3;display:block}
+.news small{color:var(--mut);font-size:11.5px;display:block;margin-top:4px}
+.news p{margin:4px 0 0;color:var(--mut);font-size:12.5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lead{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:8px 10px;margin-bottom:6px;width:100%;text-align:left}
+.lead .rk{width:22px;font-weight:800;color:var(--mut);text-align:center}
+.lead img.tl{width:22px;height:22px;object-fit:contain}
+.lead .nm{flex:1;min-width:0}
+.lead .nm b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead .nm small{color:var(--mut);font-size:11.5px}
+.lead .big{font-size:20px;font-weight:800;min-width:34px;text-align:right}
+.career td,.career th{font-size:12px;padding:7px 3px}
+.career td.t{max-width:120px}
+.career img{width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px}
+.pal td{font-size:12.5px}
 </style>
 </head>
 <body>
 <header>
   <div class="top">
-    <h1>Liga <span>en Vivo</span></h1>
+    <h1>Fútbol <span>EV</span></h1>
     <button id="refresh" aria-label="Actualizar" title="Actualizar">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg>
     </button>
@@ -199,7 +216,8 @@ code{background:var(--card2);padding:1px 5px;border-radius:5px;font-size:12px;wo
 <nav id="nav">
   <button data-v="partidos" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 4.5h-5L8 10z"/></svg>Partidos</button>
   <button data-v="tabla"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Clasificación</button>
-  <button data-v="ranking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/></svg>Ranking FIFA</button>
+  <button data-v="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Estadísticas</button>
+  <button data-v="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-2 2M8 9h5M8 13h5"/></svg>Noticias</button>
   <button data-v="favs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>Favoritos</button>
 </nav>
 
@@ -216,6 +234,7 @@ const COMPS = [
   {id:'hoy', name:'Hoy', short:'⚡ Hoy'},
   {id:'esp.1', name:'LaLiga EA Sports', short:'1ª División', logo:15, model:true, home:1.30},
   {id:'esp.2', name:'LaLiga Hypermotion', short:'2ª División', logo:107, model:true, home:1.32},
+  {id:'esp.copa_del_rey', name:'Copa del Rey', short:'Copa del Rey', logo:80, cup:true},
   {id:'uefa.champions', name:'UEFA Champions League', short:'Champions', logo:2, model:true, home:1.28},
   {id:'uefa.europa', name:'UEFA Europa League', short:'Europa League', logo:2310, model:true, home:1.25},
   {id:'uefa.nations', name:'UEFA Nations League', short:'Nations League', logo:2395},
@@ -315,7 +334,9 @@ function parseStandings(d){
   }).filter(g => g.rows.length);
   return {season: d.seasons?.[0]?.displayName || d.children?.[0]?.standings?.seasonDisplayName || '', groups};
 }
-const getStandings = lg => cached('st:'+lg, 300000, async () => parseStandings(await get(`${API2}${lg}/standings`)));
+const getStandings = (lg, season) => cached('st:'+lg+':'+(season||''), season ? 86400000 : 300000, async () => parseStandings(await get(`${API2}${lg}/standings${season ? '?season=' + season : ''}`)));
+const CUR = (() => { const d = new Date(); return d.getMonth() >= 6 ? d.getFullYear() : d.getFullYear() - 1 })();
+const seasonLabel = (y, lg) => /nations|q$|worldq|world$|euro$|america/.test(lg||'') ? String(y) : `${y}-${String((+y+1)%100).padStart(2,'0')}`;
 
 /* ---------- modelo de probabilidades (Poisson + Dixon-Coles) ---------- */
 function teamStrengths(st){
@@ -355,11 +376,16 @@ function probHTML(p, big, hn, an){
 
 /* ---------- chips de competición ---------- */
 function renderChips(){
-  const list = S.view === 'tabla' ? COMPS.filter(c => c.id !== 'hoy') : COMPS;
-  if(S.view === 'tabla' && S.comp === 'hoy') S.comp = 'esp.1';
-  $('#chips').style.display = (S.view === 'partidos' || S.view === 'tabla') ? '' : 'none';
+  const v = S.view;
+  let list = v === 'partidos' ? COMPS : COMPS.filter(c => c.id !== 'hoy');
+  if(v === 'tabla') list = [...list, {id:'fifa', short:'🌍 Ranking FIFA'}];
+  if(v !== 'partidos' && S.comp === 'hoy') S.comp = 'esp.1';
+  if(v !== 'tabla' && S.comp === 'fifa') S.comp = 'esp.1';
+  const show = v === 'partidos' || v === 'tabla' || v === 'stats';
+  $('#chips').style.display = show ? '' : 'none';
+  if(!show) return;
   $('#chips').innerHTML = list.map(c => `<button data-c="${c.id}" class="${c.id===S.comp?'on':''}">${c.logo ? `<img src="${LOGO(c.logo)}" alt="">` : ''}${esc(c.short)}</button>`).join('');
-  $('#chips').querySelectorAll('button').forEach(b => b.onclick = () => { S.comp = b.dataset.c; localStorage.setItem('comp', S.comp); S.week = 0; render() });
+  $('#chips').querySelectorAll('button').forEach(b => b.onclick = () => { S.comp = b.dataset.c; if(S.comp !== 'fifa' && S.comp !== 'hoy') localStorage.setItem('comp', S.comp); S.week = 0; S.season = null; render() });
   const on = $('#chips .on'); on && on.scrollIntoView({inline:'center', block:'nearest'});
 }
 
@@ -437,13 +463,19 @@ function matchRow(e, str){
 
 /* ---------- vista clasificación ---------- */
 async function viewTabla(){
-  const v = $('#view'), lg = S.comp, c = CMAP[lg];
+  const v = $('#view'), lg = S.comp;
+  if(lg === 'fifa') return viewRanking();
+  const c = CMAP[lg];
+  if(c.cup){ v.innerHTML = `<div class="empty">🏆 La Copa del Rey se juega por eliminatorias, sin clasificación.<br><br>Mira las rondas en <b>Partidos</b>, y goleadores y campeones históricos en <b>Estadísticas</b>.</div>`; return }
   v.innerHTML = '<div class="spin"></div>';
+  const step = /nations/.test(lg) ? 2 : 1;
+  const years = []; for(let y = CUR; y >= CUR - 15; y -= step) years.push(y);
+  const sel = `<select id="season">${years.map(y => `<option value="${y}" ${(S.season||CUR)==y?'selected':''}>Temporada ${seasonLabel(y, lg)}${y===CUR?' (actual)':''}</option>`).join('')}</select>`;
   try{
-    const st = await getStandings(lg);
+    const st = await getStandings(lg, S.season && S.season != CUR ? S.season : null);
     if(!st.groups.length) throw new Error('Clasificación no disponible');
     const multi = st.groups.length > 1;
-    let html = `<div class="day"><img src="${LOGO(c.logo)}" alt="">${esc(c.name)}${st.season ? ' · ' + esc(st.season) : ''}</div>`;
+    let html = (/q$|worldq/.test(lg) ? '' : sel) + `<div class="day"><img src="${LOGO(c.logo)}" alt="">${esc(c.name)}${st.season ? ' · ' + esc(st.season) : ''}</div>`;
     if(/q$/.test(lg) || lg.includes('worldq')) html += `<div class="hint" style="text-align:left">Última fase disponible. Ahora mismo no hay clasificatorio en curso.</div>`;
     const notes = new Map();
     st.groups.forEach(g => {
@@ -457,21 +489,18 @@ async function viewTabla(){
     html += `<div class="legend">${[...notes].map(([n,col]) => `<span><i style="background:#${String(col).replace('#','')}"></i>${esc(n)}</span>`).join('')}</div>
       <div class="hint">Toca un equipo para ver su plantilla, entrenador y estadio.</div>`;
     v.innerHTML = html;
-    v.querySelectorAll('tr[data-team]').forEach(tr => tr.onclick = () => openTeam(tr.dataset.team, lg));
+    v.querySelectorAll('tr[data-team]').forEach(tr => tr.onclick = () => openTeam(tr.dataset.team, lg, S.season && S.season != CUR ? S.season : null));
   }catch(err){
-    v.innerHTML = `<div class="err">No se pudo cargar la clasificación.<br><small>${esc(err.message)}</small></div>`;
+    v.innerHTML = sel + `<div class="err">No hay clasificación disponible para esta temporada.<br><small>${esc(err.message)}</small></div>`;
   }
+  const s = $('#season'); if(s) s.onchange = () => { S.season = +s.value; viewTabla() };
 }
 
 /* ---------- ranking FIFA (Wikipedia) ---------- */
 const tn = n => PAIS[n] || n;
 const grpName = n => String(n||'').replace(/^Group /i,'Grupo ').replace(/^League /i,'Liga ');
 const PAIS = {Spain:'España',Argentina:'Argentina',France:'Francia',England:'Inglaterra',Brazil:'Brasil',Portugal:'Portugal',Netherlands:'Países Bajos',Belgium:'Bélgica',Germany:'Alemania',Croatia:'Croacia',Morocco:'Marruecos',Italy:'Italia',Colombia:'Colombia',Mexico:'México','United States':'Estados Unidos',Uruguay:'Uruguay',Switzerland:'Suiza',Japan:'Japón',Senegal:'Senegal',Denmark:'Dinamarca',Iran:'Irán','South Korea':'Corea del Sur',Ecuador:'Ecuador',Austria:'Austria',Australia:'Australia',Norway:'Noruega',Turkey:'Turquía',Türkiye:'Turquía',Ukraine:'Ucrania',Canada:'Canadá',Sweden:'Suecia',Poland:'Polonia',Wales:'Gales',Serbia:'Serbia',Egypt:'Egipto',Nigeria:'Nigeria',Scotland:'Escocia',Peru:'Perú',Algeria:'Argelia','Czech Republic':'Chequia',Czechia:'Chequia',Hungary:'Hungría',Panama:'Panamá',Paraguay:'Paraguay',Tunisia:'Túnez','Ivory Coast':'Costa de Marfil',Greece:'Grecia',Russia:'Rusia',Chile:'Chile','Saudi Arabia':'Arabia Saudí',Qatar:'Catar',Cameroon:'Camerún',Ghana:'Ghana','Republic of Ireland':'Irlanda',Slovakia:'Eslovaquia',Slovenia:'Eslovenia',Romania:'Rumanía'};
-async function viewRanking(){
-  const v = $('#view');
-  v.innerHTML = '<div class="spin"></div>';
-  try{
-    const data = await cached('fifa', 3600000, async () => {
+function viewRankingData(){ return cached('fifa', 3600000, async () => {
       const w = await get('https://en.wikipedia.org/w/api.php?action=parse&page=FIFA_Men%27s_World_Ranking&prop=text&format=json&origin=*&formatversion=2');
       const doc = new DOMParser().parseFromString(w.parse?.text || '', 'text/html');
       const tb = [...doc.querySelectorAll('table.wikitable')].find(t => /Top 20|Rank/i.test(t.innerText) && /Points/i.test(t.innerText));
@@ -488,7 +517,14 @@ async function viewRanking(){
         return {pos, team, pts, chg, flag};
       }).filter(Boolean);
       return {asof, rows};
-    });
+    }); }
+
+async function viewRanking(){
+  const v = $('#view');
+  v.innerHTML = '<div class="spin"></div>';
+  try{
+    const data = await viewRankingData();
+
     const asofEs = data.asof ? (() => { const d = new Date(data.asof); return isNaN(d) ? data.asof : fmtDate(d) })() : '';
     v.innerHTML = `<div class="day" style="margin-top:14px">🏆 Ranking FIFA masculino${asofEs ? ' · ' + esc(asofEs) : ''}</div>
       <table><thead><tr><th>#</th><th style="text-align:left">Selección</th><th>Puntos</th></tr></thead><tbody>
@@ -697,7 +733,7 @@ function statOf(a, name){
   for(const c of a.statistics?.splits?.categories || []) for(const s of c.stats || []) if(s.name === name) return +s.value || 0;
   return 0;
 }
-function openTeam(tid, lg){
+function openTeam(tid, lg, season){
   openSheet('Equipo', async det => {
     try{
       const [r, sch] = await Promise.all([
@@ -723,6 +759,7 @@ function openTeam(tid, lg){
           ${vtxt ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(vtxt)}" target="_blank" rel="noopener"><span class="ic">🏟️</span><div><small>Estadio</small><b>${esc(homeVenue.fullName)}</b><small>Google Maps ›</small></div></a>` : ''}
           <div class="box"><span class="ic">📈</span><div><small>Temporada</small><b>${esc(trRecord(t.recordSummary))}</b><small>${esc(CMAP[lg]?.short || '')}</small></div></div>
         </div>
+        ${national ? `<div class="card" id="natbox"><h3>🌍 Selección</h3>${natStatsHTML(evs, tid)}<p id="fifapos" style="margin-top:8px"></p></div>` : ''}
         <div class="card" id="coachbox"><h3>👔 ${national ? 'Seleccionador' : 'Entrenador'}</h3><div class="spin" style="margin:10px auto"></div></div>
         <div class="tabs" id="ttabs"><button data-t="pl" class="on">Plantilla (${ath.length})</button><button data-t="cal">Partidos</button></div>
         <div id="tbody"></div>`;
@@ -748,6 +785,7 @@ function openTeam(tid, lg){
       paint('pl');
       getStandings(lg).then(st => { for(const g of st.groups){ const row = g.rows.find(x => String(x.id) === String(tid)); if(row && $('#tpos')){ $('#tpos').textContent = `${row.pos}º en ${CMAP[lg]?.short || ''}${st.groups.length > 1 ? ' · ' + grpName(g.name) : ''} · ${row.pts} pts`; break } } }).catch(() => {});
       det.querySelectorAll('#ttabs button').forEach(b => b.onclick = () => { det.querySelectorAll('#ttabs button').forEach(x => x.classList.toggle('on', x===b)); paint(b.dataset.t) });
+      if(national) fifaPos(tn(t.displayName)).then(x => { if(x && $('#fifapos')) $('#fifapos').innerHTML = `Ranking FIFA: <b style="color:var(--txt)">${x.pos}º</b> · ${esc(x.pts)} puntos` });
       getCoach(tn(t.displayName), national).then(co => {
         const box = $('#coachbox'); if(!box) return;
         box.innerHTML = `<h3>👔 ${national ? 'Seleccionador' : 'Entrenador'}</h3>` + (co ? `<div class="coach"><span class="ph">${co.photo ? `<img src="${esc(co.photo)}" alt="">` : initials(co.name)}</span><div><b>${esc(co.name)}</b><p style="margin:2px 0">${esc(co.desc)}</p></div></div>
@@ -761,6 +799,18 @@ function openTeam(tid, lg){
 }
 function trStanding(s){ return String(s||'').replace(/(\d+)(st|nd|rd|th) in /,'$1º en ').replace('Spanish ','') }
 function trRecord(r){ const m = String(r||'').match(/^(\d+)-(\d+)-(\d+)$/); return m ? `${m[1]}V · ${m[2]}E · ${m[3]}D` : (r || '—') }
+
+
+function natStatsHTML(evs, tid){
+  const played = evs.filter(e => e.state === 'post');
+  let w = 0, d = 0, l = 0, gf = 0, ga = 0;
+  played.forEach(e => { const me = String(e.home.id) === String(tid) ? e.home : e.away, op = me === e.home ? e.away : e.home; const a = +me.score||0, b = +op.score||0; gf += a; ga += b; a > b ? w++ : a === b ? d++ : l++ });
+  if(!played.length) return '<p>Sin partidos jugados en esta competición.</p>';
+  return `<div class="kv" style="margin:6px 0"><div><b>${played.length}</b><small>Partidos</small></div><div><b>${w}-${d}-${l}</b><small>V-E-D</small></div><div><b>${gf}:${ga}</b><small>Goles</small></div></div>`;
+}
+async function fifaPos(name){
+  try{ const d = await viewRankingData(); return d.rows.find(x => (PAIS[x.team] || x.team) === name) || null }catch{ return null }
+}
 
 /* ---------- ficha de jugador ---------- */
 function openPlayer(aid, tid, lg){
@@ -794,13 +844,127 @@ function openPlayer(aid, tid, lg){
           ${kg ? `<div><span>Peso</span><b>${kg} kg</b></div>` : ''}
           ${a.injuries?.length ? `<div><span>Estado</span><b>🚑 Lesionado</b></div>` : ''}
         </div>
-        <div id="pbio"></div>`;
+        <div id="pbio"></div><div id="car"><div class="spin" style="margin:20px auto"></div></div>`;
+      careerHTML(a.id, gk).then(x => { if($('#car')) $('#car').innerHTML = x }).catch(() => { if($('#car')) $('#car').innerHTML = '' });
       const setPhoto = src => { const ph = $('#pph'); if(ph){ ph.innerHTML = `<img src="${esc(src)}" alt="">` } };
       const img = new Image();
       img.onload = () => setPhoto(img.src);
       img.onerror = async () => { const w = await wikiPlayer(a.displayName); if(w?.thumbnail?.source) setPhoto(w.thumbnail.source); if(w?.extract && $('#pbio')) $('#pbio').innerHTML = `<p class="bio">${esc(w.extract.slice(0, 380))}${w.extract.length > 380 ? '…' : ''}</p>` };
       img.src = `https://a.espncdn.com/i/headshots/soccer/players/full/${a.id}.png`;
     }catch(err){ det.innerHTML = `<div class="err">No se pudo cargar el jugador.<br><small>${esc(err.message)}</small></div>` }
+  });
+}
+
+
+/* ---------- estadísticas: goleadores, asistencias, palmarés ---------- */
+async function viewStats(){
+  const v = $('#view'), lg = S.comp, c = CMAP[lg];
+  S.statTab = S.statTab || 'goles';
+  const hasPal = ['esp.1','esp.2','esp.copa_del_rey','uefa.champions','uefa.europa'].includes(lg);
+  const tabs = [['goles','⚽ Goleadores'],['asist','🅰️ Asistencias'], ...(hasPal ? [['pal','🏆 Palmarés']] : [])];
+  if(!hasPal && S.statTab === 'pal') S.statTab = 'goles';
+  v.innerHTML = `<div class="tabs" id="stabs">${tabs.map(([k,t]) => `<button data-t="${k}" class="${k===S.statTab?'on':''}">${t}</button>`).join('')}</div><div id="sbody"><div class="spin"></div></div>`;
+  v.querySelectorAll('#stabs button').forEach(b => b.onclick = () => { S.statTab = b.dataset.t; viewStats() });
+  const box = $('#sbody');
+  try{
+    if(S.statTab === 'pal') return box.innerHTML = await palmaresHTML(lg);
+    const d = await cached('lead:'+lg, 600000, () => get(`${API}${lg}/statistics`));
+    const cat = (d.stats || []).find(s => s.name === (S.statTab === 'goles' ? 'goalsLeaders' : 'assistsLeaders'));
+    const L = (cat?.leaders || []).slice(0, 25);
+    if(!L.length) return box.innerHTML = '<div class="empty">Todavía no hay datos esta temporada.</div>';
+    box.innerHTML = `<div class="day"><img src="${LOGO(c.logo)}" alt="">${esc(c.name)} · ${esc(seasonLabel(d.season?.year || CUR, lg))}</div>` + L.map((l, i) => {
+      const m = (l.displayValue || '').match(/Matches:\s*(\d+)/); const tm = l.athlete?.team || l.team || {};
+      return `<button class="lead" data-ath="${l.athlete?.id}" data-tid="${tm.id || ''}"><span class="rk">${i+1}</span>
+        <span class="ph" style="width:38px;height:38px;font-size:13px">${initials(l.athlete?.displayName)}</span>
+        <span class="nm"><b>${esc(l.athlete?.displayName)}</b><small>${tm.logos?.[0]?.href || tm.logo ? `<img class="tl" src="${esc(tm.logos?.[0]?.href || tm.logo)}" alt="" style="width:14px;height:14px;vertical-align:-2px"> ` : ''}${esc(tn(tm.displayName || tm.shortDisplayName || ''))}${m ? ' · ' + m[1] + ' PJ' : ''}</small></span>
+        <span class="big">${Math.round(l.value)}</span></button>`;
+    }).join('') + '<p class="hint">Toca un jugador para ver su ficha y su trayectoria.</p>';
+    box.querySelectorAll('.lead').forEach(b => {
+      const img = new Image(); img.onload = () => { const ph = b.querySelector('.ph'); ph.textContent = ''; ph.appendChild(img) }; img.src = `https://a.espncdn.com/i/headshots/soccer/players/full/${b.dataset.ath}.png`;
+      b.onclick = () => b.dataset.tid ? openPlayer(b.dataset.ath, b.dataset.tid, lg) : openCareerOnly(b.dataset.ath, b.querySelector('b').textContent);
+    });
+  }catch(err){ box.innerHTML = `<div class="err">No se pudieron cargar las estadísticas.<br><small>${esc(err.message)}</small></div>` }
+}
+const WIKI_PAL = {'esp.1':'List_of_Spanish_football_champions','uefa.champions':'List_of_European_Cup_and_UEFA_Champions_League_finals','uefa.europa':'List_of_UEFA_Cup_and_Europa_League_finals','esp.copa_del_rey':'List_of_Copa_del_Rey_finals'};
+async function wikiTables(page){
+  return cached('wt:'+page, 86400000, async () => {
+    const w = await get(`https://en.wikipedia.org/w/api.php?action=parse&page=${page}&prop=text&format=json&origin=*&formatversion=2`);
+    const doc = new DOMParser().parseFromString(w.parse?.text || '', 'text/html');
+    return [...doc.querySelectorAll('table.wikitable')].map(t => [...t.rows].map(r => [...r.cells].map(c => c.innerText.replace(/\[[^\]]*\]/g,'').replace(/\s+/g,' ').trim())));
+  });
+}
+const cleanClub = s => String(s||'').replace(/\(\d+\)/g,'').replace(/[†‡*§#&]/g,'').trim();
+async function palmaresHTML(lg){
+  const c = CMAP[lg];
+  let seasons = [], titles = [];
+  if(lg === 'esp.2'){
+    const ys = []; for(let y = CUR - 1; y >= CUR - 12; y--) ys.push(y);
+    const res = await Promise.allSettled(ys.map(y => getStandings(lg, y)));
+    seasons = res.map((r, i) => r.status === 'fulfilled' && r.value.groups[0]?.rows.length ? {s:seasonLabel(ys[i], lg), w:r.value.groups[0].rows[0].name, x:r.value.groups[0].rows[0].pts + ' pts', r:r.value.groups[0].rows[1]?.name || ''} : null).filter(Boolean);
+  } else {
+    const tabs = await wikiTables(WIKI_PAL[lg]);
+    const fin = tabs.find(t => t[0] && t[0].some(h => /^Season/i.test(h)) && t[0].some(h => /Winner/i.test(h)) && t.length > 10);
+    if(fin){
+      const H = fin[0], iS = H.findIndex(h => /^Season/i.test(h)), iW = H.findIndex(h => /Winner/i.test(h)), iR = H.findIndex(h => /Runner/i.test(h));
+      const iX = lg === 'esp.1' ? H.findIndex(h => /^Pts/i.test(h)) : H.findIndex(h => /Score/i.test(h));
+      seasons = fin.slice(1).filter(r => r.length >= H.length - 1 && /\d{4}/.test(r[iS] || '')).map(r => ({s:r[iS], w:cleanClub(r[iW]), x:(r[iX]||'').replace(/[*†‡§#&]/g,'') + (lg === 'esp.1' && r[iX] ? ' pts' : ''), r:cleanClub(r[iR])})).reverse().slice(0, 20);
+    }
+    const tt = tabs.find(t => t[0] && /^Club/i.test(t[0][0]) && t[0].some(h => /Winners|Title|Wins/i.test(h)));
+    if(tt){ const iC = tt[0].findIndex(h => /Winners|Title|Wins/i.test(h)); titles = tt.slice(1).map(r => ({club:cleanClub(r[0]), n:parseInt(r[iC]) || 0})).filter(x => x.n > 0).sort((a,b) => b.n - a.n).slice(0, 10) }
+  }
+  if(!seasons.length && !titles.length) return '<div class="empty">Palmarés no disponible ahora mismo.</div>';
+  return `<div class="day"><img src="${LOGO(c.logo)}" alt="">${esc(c.name)} · Palmarés</div>` +
+    (titles.length ? `<div class="grp">Más títulos</div><table class="pal"><tbody>${titles.map((t, i) => `<tr><td class="pos">${i+1}</td><td class="t">${esc(t.club)}</td><td class="p">${t.n} 🏆</td></tr>`).join('')}</tbody></table>` : '') +
+    (seasons.length ? `<div class="grp">Últimas temporadas</div><table class="pal"><thead><tr><th>Temp.</th><th style="text-align:left">Campeón</th><th>${lg === 'esp.1' || lg === 'esp.2' ? 'Pts' : 'Final'}</th><th style="text-align:left" class="hide-s">Subcampeón</th></tr></thead><tbody>${seasons.map(s => `<tr><td>${esc(s.s)}</td><td class="t"><b>${esc(s.w)}</b></td><td>${esc(s.x)}</td><td class="t hide-s">${esc(s.r)}</td></tr>`).join('')}</tbody></table>` : '') +
+    `<p class="hint">Fuente: ${lg === 'esp.2' ? 'ESPN' : 'Wikipedia'}.</p>`;
+}
+
+/* ---------- noticias (Marca, sin anuncios: solo titulares) ---------- */
+const NEWS = [['portada','Portada'],['futbol/primera-division','1ª División'],['futbol/segunda-division','2ª División'],['futbol/champions-league','Champions'],['futbol/seleccion','Selección']];
+async function viewNews(){
+  const v = $('#view');
+  S.newsTab = S.newsTab || 'portada';
+  v.innerHTML = `<div class="tabs" id="ntabs" style="margin-top:12px">${NEWS.map(([k,t]) => `<button data-t="${k}" class="${k===S.newsTab?'on':''}">${t}</button>`).join('')}</div><div id="nbody"><div class="spin"></div></div>`;
+  v.querySelectorAll('#ntabs button').forEach(b => b.onclick = () => { S.newsTab = b.dataset.t; viewNews() });
+  try{
+    const d = await cached('news:'+S.newsTab, 600000, () => get('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(`https://e00-marca.uecdn.es/rss/${S.newsTab}.xml`)));
+    if(d.status !== 'ok') throw new Error(d.message || 'Noticias no disponibles');
+    const txt = s => { const el = document.createElement('div'); el.innerHTML = s || ''; return el.textContent.replace(/\s+/g,' ').trim() };
+    $('#nbody').innerHTML = (d.items || []).map(it => {
+      const desc = txt(it.description); const t = new Date(it.pubDate.replace(' ', 'T') + 'Z');
+      const ago = isNaN(t) ? '' : (() => { const m = Math.round((Date.now() - t) / 60000); return m < 60 ? `hace ${Math.max(m,1)} min` : m < 1440 ? `hace ${Math.round(m/60)} h` : fmtShort(t) })();
+      return `<a class="news" href="${esc(it.link)}" target="_blank" rel="noopener">${it.thumbnail ? `<img src="${esc(it.thumbnail)}" alt="" loading="lazy">` : ''}<div><b>${esc(txt(it.title))}</b>${desc ? `<p>${esc(desc.slice(0, 160))}</p>` : ''}<small>MARCA · ${esc(ago)}</small></div></a>`;
+    }).join('') + '<p class="hint">Titulares de MARCA. Al tocar se abre la noticia completa en marca.com.</p>';
+  }catch(err){ $('#nbody').innerHTML = `<div class="err">No se pudieron cargar las noticias.<br><small>${esc(err.message)}</small></div>` }
+}
+
+/* ---------- trayectoria de jugador (todas las temporadas) ---------- */
+const COMP_ES = {'esp.1':'LaLiga','esp.2':'LaLiga 2','esp.copa_del_rey':'Copa del Rey','esp.super_cup':'Supercopa','uefa.champions':'Champions','uefa.europa':'Europa League','uefa.europa.conf':'Conference','uefa.nations':'Nations League','uefa.euro':'Eurocopa','uefa.euroq':'Clasif. Euro','fifa.world':'Mundial','conmebol.america':'Copa América','eng.1':'Premier League','eng.2':'Championship','eng.fa':'FA Cup','eng.league_cup':'Copa de la Liga (ING)','fra.1':'Ligue 1','fra.coupe_de_france':'Copa de Francia','ita.1':'Serie A','ita.coppa_italia':'Copa de Italia','ger.1':'Bundesliga','ger.dfb_pokal':'Copa de Alemania','por.1':'Liga Portugal','ned.1':'Eredivisie','bra.1':'Brasileirão','arg.1':'Liga Argentina','usa.1':'MLS','ksa.1':'Liga Saudí','tur.1':'Superliga Turca','bel.1':'Liga Belga','sco.1':'Premiership (ESC)','mex.1':'Liga MX','uefa.super_cup':'Supercopa de Europa','fifa.cwc':'Mundial de Clubes'};
+const compName = s => COMP_ES[s] || (/worldq/.test(s) ? 'Clasif. Mundial' : s.toUpperCase());
+async function careerHTML(aid, gk){
+  const log = await cached('cl:'+aid, 3600000, () => get(`https://sports.core.api.espn.com/v2/sports/soccer/athletes/${aid}/statisticslog`));
+  const ents = (log.entries || []).map(e => {
+    const m = (e.season?.$ref || '').match(/leagues\/([^/]+)\/seasons\/(\d+)/); if(!m) return null;
+    const tot = (e.statistics || []).find(s => s.type === 'total') || e.statistics?.[0];
+    const team = ((tot?.team?.$ref || '').match(/teams\/(\d+)/) || [])[1];
+    return {lg:m[1], y:+m[2], team, ref:tot?.statistics?.$ref};
+  }).filter(e => e && e.ref && !/friendly|gamper|trofeo|club\./.test(e.lg)).sort((a,b) => b.y - a.y || (a.lg.localeCompare(b.lg))).slice(0, 30);
+  if(!ents.length) return '';
+  const res = await Promise.allSettled(ents.map(e => cached('cs:'+e.ref, 3600000, () => get(e.ref.replace('http://','https://')))));
+  const val = (s, n) => { for(const c of s?.splits?.categories || []) for(const x of c.stats || []) if(x.name === n) return +x.value || 0; return 0 };
+  const rows = ents.map((e, i) => ({...e, s: res[i].status === 'fulfilled' ? res[i].value : null})).filter(r => r.s && val(r.s,'appearances') > 0);
+  if(!rows.length) return '';
+  let tp = 0, tg = 0, ta = 0;
+  const body = rows.map(r => { const pj = val(r.s,'appearances'), g = gk ? val(r.s,'goalsConceded') : val(r.s,'totalGoals'), a = gk ? val(r.s,'saves') : val(r.s,'goalAssists'); tp += pj; tg += g; ta += a;
+    return `<tr><td>${esc(seasonLabel(r.y, r.lg))}</td><td class="t">${r.team ? `<img src="https://a.espncdn.com/i/teamlogos/soccer/500/${r.team}.png" alt="">` : ''}${esc(compName(r.lg))}</td><td>${pj}</td><td>${g}</td><td>${a}</td></tr>` }).join('');
+  return `<div class="grp">Trayectoria por temporadas</div><table class="career"><thead><tr><th>Temp.</th><th style="text-align:left">Competición</th><th>PJ</th><th>${gk?'GC':'G'}</th><th>${gk?'Par.':'A'}</th></tr></thead><tbody>${body}
+    <tr><td colspan="2" class="t"><b>Total</b></td><td class="p">${tp}</td><td class="p">${tg}</td><td class="p">${ta}</td></tr></tbody></table><p class="hint">Partidos oficiales (sin amistosos). Fuente: ESPN.</p>`;
+}
+function openCareerOnly(aid, name){
+  openSheet(name, async det => {
+    det.innerHTML = `<div class="phero"><div class="ph" id="pph">${initials(name)}</div><h2>${esc(name)}</h2></div><div id="car"><div class="spin"></div></div>`;
+    const w = await wikiPlayer(name); if(w?.thumbnail?.source && $('#pph')) $('#pph').innerHTML = `<img src="${esc(w.thumbnail.source)}" alt="">`;
+    try{ $('#car').innerHTML = await careerHTML(aid, false) || '<div class="empty">Sin trayectoria disponible.</div>' }catch{ $('#car').innerHTML = '<div class="empty">Sin trayectoria disponible.</div>' }
   });
 }
 
@@ -812,10 +976,10 @@ async function viewFavs(){
   const perm = 'Notification' in window ? Notification.permission : 'unsupported';
   v.innerHTML = `
   <div class="card"><h3>🔔 Avisos de gol</h3>
-    <p>Te aviso de cada gol de tus equipos favoritos (liga, Champions y Europa League) mientras la app esté abierta o en segundo plano reciente.</p>
+    <p>Te aviso de cada gol de tus equipos favoritos (liga, Copa, Champions y Europa League) mientras la app esté abierta o en segundo plano reciente.</p>
     ${perm==='unsupported' ? `<p>${ios && !standalone ? 'En iPhone primero añade la app a la pantalla de inicio (Compartir → «Añadir a pantalla de inicio») y ábrela desde ese icono.' : 'Este navegador no admite notificaciones.'}</p>`
       : perm==='granted' && S.notif ? `<p>✅ Activados.</p><button class="btn sec" id="nt">Probar aviso</button> <button class="btn sec" id="noff">Desactivar</button>`
-      : perm==='denied' ? `<p>Están bloqueados. Actívalos en Ajustes del móvil → Notificaciones → Liga en Vivo.</p>`
+      : perm==='denied' ? `<p>Están bloqueados. Actívalos en Ajustes del móvil → Notificaciones → Fútbol EV.</p>`
       : `<button class="btn" id="non">🔔 Activar avisos de gol</button>`}
   </div>
   <div class="card"><h3>⭐ Tus equipos (<span id="nfav">${S.favs.length}</span>)</h3><p>Toca para marcar o desmarcar. También puedes usar la ★ dentro de cualquier equipo.</p>
@@ -823,7 +987,7 @@ async function viewFavs(){
     <div class="teams" id="teams" style="margin-top:10px"><div class="spin"></div></div>
   </div>
   ${!standalone ? `<div class="card"><h3>➕ Instalar en pantalla de inicio</h3><p>${ios ? 'Safari → botón Compartir → «Añadir a pantalla de inicio».' : 'Menú ⋮ de Chrome → «Instalar app».'}</p></div>` : ''}
-  <div class="card"><h3>ℹ️ Fuentes</h3><p>Partidos, clasificaciones, plantillas y estadísticas: ESPN. Entrenadores, fotos y ranking FIFA: Wikipedia. Probabilidades: modelo estadístico propio.</p></div>`;
+  <div class="card"><h3>ℹ️ Fuentes</h3><p>Partidos, clasificaciones, plantillas y estadísticas: ESPN. Entrenadores, fotos, palmarés y ranking FIFA: Wikipedia. Noticias: MARCA. Probabilidades: modelo estadístico propio.</p></div>`;
   const on = $('#non'); if(on) on.onclick = enableNotif;
   const t = $('#nt'); if(t) t.onclick = () => notify('⚽ Prueba', 'Así te llegarán los goles de tus equipos');
   const off = $('#noff'); if(off) off.onclick = () => { S.notif = false; localStorage.setItem('notif','0'); render() };
@@ -849,7 +1013,7 @@ let swReg = null;
 async function enableNotif(){
   if(!('Notification' in window)) return toast('Este navegador no admite notificaciones');
   const p = await Notification.requestPermission();
-  if(p === 'granted'){ S.notif = true; localStorage.setItem('notif','1'); toast('Avisos de gol activados'); notify('⚽ Liga en Vivo','Te avisaré de cada gol de tus favoritos') }
+  if(p === 'granted'){ S.notif = true; localStorage.setItem('notif','1'); toast('Avisos de gol activados'); notify('⚽ Fútbol EV','Te avisaré de cada gol de tus favoritos') }
   render();
 }
 async function notify(title, body, tag){
@@ -886,7 +1050,7 @@ let timer = null;
 async function pollFavs(){
   let anyLive = false;
   if(S.favs.length){
-    const lgs = [...new Set([...S.favs.map(f => f.league || 'esp.1'), 'uefa.champions', 'uefa.europa'])];
+    const lgs = [...new Set([...S.favs.map(f => f.league || 'esp.1'), 'esp.copa_del_rey', 'uefa.champions', 'uefa.europa'])];
     await Promise.all(lgs.map(async lg => {
       try{
         const evs = (await sbDays(lg, [new Date()])).map(e => norm(e, lg));
@@ -913,7 +1077,8 @@ function render(keepScroll){
   if(!keepScroll) window.scrollTo(0,0);
   if(S.view === 'partidos') return viewPartidos();
   if(S.view === 'tabla') return viewTabla();
-  if(S.view === 'ranking') return viewRanking();
+  if(S.view === 'stats') return viewStats();
+  if(S.view === 'news') return viewNews();
   return viewFavs();
 }
 document.querySelectorAll('#nav button').forEach(b => b.onclick = () => { S.view = b.dataset.v; render() });

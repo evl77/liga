@@ -1,4 +1,4 @@
-# Liga en Vivo — instalación
+# Fútbol EV — instalación
 
 App web instalable (PWA) con 1ª y 2ª División: partidos por semana, directo, clasificación, TV, goles e incidencias, estadísticas, alineaciones y avisos de gol de tus favoritos. No necesita cuenta de Claude ni servidor propio: los datos vienen de la API pública de ESPN.
 
