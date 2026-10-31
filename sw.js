@@ -1,5 +1,5 @@
 // Service worker de Liga en Vivo: funciona sin conexión y gestiona las notificaciones
-const CACHE = 'liga-v4';
+const CACHE = 'liga-v5';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
