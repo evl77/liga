@@ -15,10 +15,12 @@
 <meta name="apple-mobile-web-app-title" content="Fútbol EV">
 <style>
 :root{
-  --bg:#0b1220;--card:#131c2e;--card2:#1a2540;--line:#24314f;--txt:#e8edf7;--mut:#8b98b4;
+  --navbg:rgba(11,18,32,.97);--onacc:#04210f;--bg:#0b1220;--card:#131c2e;--card2:#1a2540;--line:#24314f;--txt:#e8edf7;--mut:#8b98b4;
   --acc:#22c55e;--live:#ef4444;--gold:#facc15;--blue:#3b82f6;--draw:#94a3b8;
   --safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
 }
+html[data-theme=light]{--bg:#f2f4f8;--card:#ffffff;--card2:#e9edf3;--line:#dde3ec;--txt:#0f172a;--mut:#64748b;--acc:#16a34a;--navbg:rgba(255,255,255,.97);--draw:#94a3b8}
+html[data-theme=light] .match,html[data-theme=light] .card,html[data-theme=light] table,html[data-theme=light] .prow,html[data-theme=light] .lead,html[data-theme=light] .news{box-shadow:0 1px 2px rgba(15,23,42,.06)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
@@ -31,9 +33,9 @@ h1 span{color:var(--acc)}
 .chips::-webkit-scrollbar{display:none}
 .chips button{flex:none;padding:7px 12px;border-radius:999px;background:var(--card);font-size:13px;font-weight:600;color:var(--mut);white-space:nowrap;display:flex;align-items:center;gap:6px}
 .chips button img{width:16px;height:16px;object-fit:contain}
-.chips button.on{background:var(--acc);color:#04210f}
+.chips button.on{background:var(--acc);color:var(--onacc)}
 main{padding:0 16px calc(90px + var(--safe-b))}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(11,18,32,.97);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding-bottom:var(--safe-b);z-index:6}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--navbg);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding-bottom:var(--safe-b);z-index:6}
 nav button{flex:1;padding:9px 0 8px;font-size:11px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:3px}
 nav button.on{color:var(--acc)}
 nav svg{width:22px;height:22px}
@@ -199,15 +201,42 @@ select{background:var(--card);color:var(--txt);border:1px solid var(--line);bord
 .career td.t{max-width:120px}
 .career img{width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:4px}
 .pal td{font-size:12.5px}
+/* campo de alineaciones */
+.pitch{position:relative;background:linear-gradient(#1f8f4e,#187a42);border-radius:14px;padding:10px 4px;margin:8px 0 12px;overflow:hidden}
+.pitch::before{content:"";position:absolute;inset:8px;border:2px solid rgba(255,255,255,.35);border-radius:6px;pointer-events:none}
+.pitch::after{content:"";position:absolute;left:8px;right:8px;top:50%;border-top:2px solid rgba(255,255,255,.35);pointer-events:none}
+.prow2{display:flex;justify-content:space-around;margin:8px 0;position:relative;z-index:1}
+.pp{display:flex;flex-direction:column;align-items:center;width:64px;font-size:10.5px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);text-align:center;line-height:1.15}
+.pp i{font-style:normal;width:26px;height:26px;border-radius:50%;background:#fff;color:#0b1220;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;margin-bottom:3px;text-shadow:none}
+.pitch .side{position:relative;z-index:1;color:#fff;font-size:11px;font-weight:700;text-align:center;opacity:.9}
+.pitch.away .pp i{background:#0b1220;color:#fff}
+/* minuto a minuto */
+.cm{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;line-height:1.35}
+.cm b{width:36px;flex:none;color:var(--mut);font-size:12px;text-align:right}
+.cm.goal{background:rgba(34,197,94,.1);border-radius:8px}
+.chk{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.chk input{width:20px;height:20px;accent-color:var(--acc)}
+.why{background:var(--card);border-radius:14px;padding:16px;margin:14px 0;text-align:center}
+.why .ic{font-size:34px}
+.why h3{margin:6px 0 4px;font-size:16px}
+.why p{margin:4px 0;color:var(--mut);font-size:13px;line-height:1.45}
+.sres{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:10px;margin-bottom:6px;width:100%;text-align:left}
+.sres img{width:30px;height:30px;object-fit:contain}
+.sres small{display:block;color:var(--mut);font-size:12px}
+.inj{display:flex;gap:8px;align-items:center;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line)}
+.inj small{color:var(--mut);margin-left:auto}
+.actions{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
 </style>
 </head>
 <body>
 <header>
   <div class="top">
     <h1>Fútbol <span>EV</span></h1>
+    <div style="display:flex;gap:14px;align-items:center"><button id="search" aria-label="Buscar" title="Buscar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+    <button id="theme" aria-label="Modo día / noche" title="Modo día / noche" style="font-size:19px;width:24px">🌙</button>
     <button id="refresh" aria-label="Actualizar" title="Actualizar">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg>
-    </button>
+    </button></div>
   </div>
   <div class="chips" id="chips"></div>
 </header>
@@ -238,11 +267,19 @@ const COMPS = [
   {id:'esp.copa_del_rey', name:'Copa del Rey', short:'Copa del Rey', logo:80, cup:true},
   {id:'uefa.champions', name:'UEFA Champions League', short:'Champions', logo:2, model:true, home:1.28},
   {id:'uefa.europa', name:'UEFA Europa League', short:'Europa League', logo:2310, model:true, home:1.25},
+  {id:'esp.super_cup', name:'Supercopa de España', short:'Supercopa', logo:8102, cup:true},
+  {id:'esp.w.1', name:'Liga F', short:'Liga F', logo:20956, model:true, home:1.22},
+  {id:'eng.1', name:'Premier League', short:'Premier', logo:23, model:true, home:1.25},
+  {id:'ita.1', name:'Serie A', short:'Serie A', logo:12, model:true, home:1.27},
+  {id:'ger.1', name:'Bundesliga', short:'Bundesliga', logo:10, model:true, home:1.25},
+  {id:'fra.1', name:'Ligue 1', short:'Ligue 1', logo:9, model:true, home:1.27},
   {id:'uefa.nations', name:'UEFA Nations League', short:'Nations League', logo:2395},
+  {id:'fifa.friendly', name:'Amistosos de selecciones', short:'Amistosos', logo:3922, friendly:true},
   {id:'fifa.worldq.uefa', name:'Clasificación Mundial (UEFA)', short:'Clasif. Mundial', logo:4},
   {id:'uefa.euroq', name:'Clasificación Eurocopa', short:'Clasif. Eurocopa', logo:74},
 ];
 const CMAP = Object.fromEntries(COMPS.map(c => [c.id, c]));
+const NATIONAL = ['uefa.nations','fifa.friendly','fifa.worldq.uefa','uefa.euroq'];
 const CLUB_COMPS = ['esp.1','esp.2','uefa.champions','uefa.europa'];
 const TZ = 'Europe/Madrid';
 const POLL_LIVE = 30000, POLL_IDLE = 180000;
@@ -252,6 +289,8 @@ const S = {
   view: 'partidos', week: 0,
   favs: load('favs', []), scores: load('scores', {}),
   notif: localStorage.getItem('notif') === '1',
+  alerts: load('alerts', {gol:true, inicio:true, descanso:false, final:true, roja:true}),
+  evst: load('evst', {}),
   cache: {}, stack: [],
 };
 function load(k, d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d }catch{ return d } }
@@ -314,6 +353,7 @@ function norm(ev, lg){
     clock: ev.status?.displayClock || c.status?.displayClock || '',
     home: team(h), away: team(a), venue: c.venue?.fullName || '',
     goals: (c.details||[]).filter(d => d.scoringPlay),
+    reds: (c.details||[]).filter(d => /red card/i.test(d.type?.text || '')).length,
     round: ev.season?.slug || '',
   };
 }
@@ -390,6 +430,48 @@ function renderChips(){
   const on = $('#chips .on'); on && on.scrollIntoView({inline:'center', block:'nearest'});
 }
 
+
+/* ---------- motivo cuando no hay partidos ---------- */
+const PHASE_ES = {'League Phase':'Fase liga','Knockout Round Playoffs':'Playoff de octavos','Rd of 16':'Octavos de final','Round of 16':'Octavos de final','Quarterfinals':'Cuartos de final','Semifinals':'Semifinales','Final':'Final','Qualifying Round':'Ronda previa','First Round':'Primera eliminatoria','Second Round':'Segunda eliminatoria','Round of 32':'Dieciseisavos','Group Stage':'Fase de grupos','Promotion/Relegation':'Promoción'};
+const trPhase = s => PHASE_ES[s] || String(s||'').replace('Round','Ronda').replace('Matchday','Jornada');
+function mondayOf(d){ const x = new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate() - ((x.getDay()+6)%7)); return x }
+async function emptyReason(lg, mon, sun){
+  const c = CMAP[lg] || {};
+  const d = await cached('sbdef:'+lg, 1800000, () => get(`${API}${lg}/scoreboard`)).catch(() => ({}));
+  const L = d.leagues?.[0] || {};
+  const cal = L.calendar || [];
+  const days = L.calendarType === 'day' ? cal.map(x => new Date(x)).filter(x => !isNaN(x)) : [];
+  const phases = (L.calendarType !== 'day' ? (cal[0]?.entries || []) : []).map(e => ({label:e.label, s:new Date(e.startDate), e:new Date(e.endDate)}));
+  const evDates = (d.events || []).map(e => new Date(e.date)).filter(x => x > sun).sort((a,b) => a - b);
+  let next = days.find(x => x > sun) || evDates[0] || null;
+  const prev = [...days].reverse().find(x => x < mon) || null;
+  const sEnd = L.season?.endDate ? new Date(L.season.endDate) : null;
+  let ic = '📅', title = 'No hay partidos estas fechas', why = [];
+  const national = NATIONAL.includes(lg);
+  const xmas = (m, s) => { const y = s.getFullYear(); const a = new Date(y, 11, 22), b = new Date(y + (s.getMonth() === 11 ? 1 : 0), 0, 3); return (m <= b && s >= a) || (m.getMonth() === 0 && m.getDate() <= 3) };
+  // ¿Parón de selecciones?
+  let natBreak = false;
+  if(!national){
+    const sample = [3, 5, 7].map(i => { const x = new Date(mon); x.setDate(mon.getDate() + i - 1); return x });
+    const r = await Promise.allSettled(['uefa.nations','fifa.friendly','fifa.worldq.uefa'].map(l => sbDays(l, sample)));
+    natBreak = r.some(x => x.status === 'fulfilled' && x.value.length);
+  }
+  const ph = phases.find(p => mon <= p.e && sun >= p.s);
+  const nextPh = phases.find(p => p.s > sun);
+  if(sEnd && mon > sEnd || (!next && prev && !nextPh)){ ic = '🏁'; title = 'Temporada terminada'; why.push(`${esc(c.name)} ya ha terminado esta temporada. Los partidos de la próxima aparecerán cuando se publique el calendario.`) }
+  else if(prev === null && days.length && next && next > sun && S.week >= 0 && days[0] > sun){ ic = '🗓️'; title = 'La temporada aún no ha empezado'; why.push(`${esc(c.name)} arranca el ${esc(fmtDay(days[0]))}.`) }
+  else if(natBreak){ ic = '🌍'; title = 'Parón por selecciones'; why.push('Esta semana se juegan partidos internacionales (Nations League, clasificatorios o amistosos), así que las ligas se detienen.'); why.push('Puedes verlos en las competiciones de selecciones de arriba.') }
+  else if(xmas(mon, sun) && !national){ ic = '🎄'; title = 'Parón navideño'; why.push('La competición se detiene por las fiestas de Navidad.') }
+  else if(/uefa\.(champions|europa)/.test(lg)){ ic = '🌙'; title = 'Semana sin jornada europea'; why.push('Las competiciones europeas no juegan todas las semanas: alternan con las ligas y los parones de selecciones.'); if(ph) why.push(`Fase actual: <b>${esc(trPhase(ph.label))}</b>.`) }
+  else if(c.cup){ ic = '🏆'; title = 'Sin eliminatoria esta semana'; why.push(nextPh ? `Próxima ronda: <b>${esc(trPhase(nextPh.label))}</b> (desde el ${esc(fmtShort(nextPh.s))}).` : 'La competición no tiene ronda programada en estas fechas.') }
+  else if(national){ ic = '🌍'; title = 'Sin partidos de selecciones'; why.push('Las selecciones solo juegan en las ventanas FIFA (septiembre, octubre, noviembre, marzo y junio).'); if(/q$|worldq/.test(lg)) why.push('Ahora mismo no hay una fase de clasificación en curso.') }
+  else { why.push('No hay jornada programada en estas fechas.') }
+  if(!next && nextPh) next = nextPh.s;
+  let jump = null;
+  if(next){ jump = Math.round((mondayOf(next) - mondayOf(new Date())) / (7*864e5)); why.push(`Próximos partidos: <b>${esc(fmtDay(next))}</b>.`) }
+  return `<div class="why"><div class="ic">${ic}</div><h3>${title}</h3>${why.map(w => `<p>${w}</p>`).join('')}${jump !== null && jump !== S.week ? `<button class="btn" id="jump" data-w="${jump}" style="margin-top:10px">Ir a la próxima jornada ›</button>` : ''}</div>`;
+}
+
 /* ---------- vista partidos ---------- */
 async function viewPartidos(){
   const v = $('#view');
@@ -402,14 +484,12 @@ async function viewPartidos(){
   try{
     const [raw, str] = await Promise.all([sbDays(S.comp, daysOf(mon, sun)), c.model ? getStandings(S.comp).then(teamStrengths).catch(() => null) : null]);
     let evs = raw.map(e => norm(e, S.comp)).sort((x,y) => new Date(x.date) - new Date(y.date));
-    let extra = '';
-    if(!evs.length && S.week === 0){ // competiciones con parones: mostrar la próxima/última jornada
-      const d = await get(`${API}${S.comp}/scoreboard`);
-      evs = (d.events||[]).map(e => norm(e, S.comp)).sort((x,y) => new Date(x.date) - new Date(y.date));
-      if(evs.length) extra = `<div class="hint">No hay partidos esta semana. Mostrando la jornada más cercana.</div>`;
+    if(!evs.length){
+      $('#list').innerHTML = await emptyReason(S.comp, mon, sun);
+      const j = $('#jump'); if(j) j.onclick = () => { S.week = +j.dataset.w; render() };
+      return;
     }
-    if(!evs.length){ $('#list').innerHTML = `<div class="empty">No hay partidos en estas fechas.${/q/.test(S.comp)?'<br><br>Ahora mismo no hay una fase de clasificación en curso.':''}<br><br><button class="btn sec" id="nx">Ver semana siguiente</button></div>`; $('#nx').onclick=()=>{S.week++;render()}; return }
-    $('#list').innerHTML = extra + listHTML(evs, str);
+    $('#list').innerHTML = listHTML(evs, str);
     bindMatches();
     checkGoals(evs);
   }catch(err){
@@ -429,6 +509,7 @@ async function viewHoy(){
   const v = $('#view');
   if(!(S.silent && $('#list'))) v.innerHTML = `<div class="day" style="margin-top:12px">${esc(fmtDay(new Date()))}</div><div id="list"><div class="spin"></div></div>`;
   const comps = COMPS.filter(c => c.id !== 'hoy');
+  S.hoyComps = comps;
   const res = await Promise.allSettled(comps.map(async c => {
     const [raw, str] = await Promise.all([sbDays(c.id, [new Date()]), c.model ? getStandings(c.id).then(teamStrengths).catch(() => null) : null]);
     return {c, str, evs: raw.map(e => norm(e, c.id)).sort((x,y) => new Date(x.date) - new Date(y.date))};
@@ -439,7 +520,11 @@ async function viewHoy(){
   let html = '';
   if(favEvs.length) html += `<div class="day">⭐ Tus equipos</div>` + favEvs.map(x => matchRow(x.e, x.str)).join('');
   ok.forEach(x => { html += `<div class="day"><img src="${LOGO(x.c.logo)}" alt="">${esc(x.c.name)}</div>` + x.evs.map(e => matchRow(e, x.str)).join('') });
-  if(!html) html = `<div class="empty">Hoy no hay partidos de estas competiciones.<br><br>Elige una competición arriba para ver su calendario.</div>`;
+  if(!html){
+    const d = await cached('sbdef:esp.1', 1800000, () => get(`${API}esp.1/scoreboard`)).catch(() => ({}));
+    const next = (d.leagues?.[0]?.calendar || []).map(x => new Date(x)).find(x => x > new Date());
+    html = `<div class="why"><div class="ic">😴</div><h3>Hoy no hay partidos</h3><p>Ninguna de las competiciones de la app juega hoy.</p>${next ? `<p>LaLiga vuelve el <b>${esc(fmtDay(next))}</b>.</p>` : ''}<p>Elige una competición arriba para ver su calendario.</p></div>`;
+  }
   $('#list').innerHTML = html;
   bindMatches();
   ok.forEach(x => checkGoals(x.evs));
@@ -592,22 +677,29 @@ function renderMatch(det, d, id, lg, str){
       ${maps ? `<a href="${maps}" target="_blank" rel="noopener"><span class="ic">🏟️</span><div><small>Estadio</small><b>${esc(v.fullName)}</b><small>Abrir en Google Maps ›</small></div></a>` : ''}
       <a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener"><span class="ic">📺</span><div><small>Televisión</small><b>Dónde verlo en España</b><small>Buscar ›</small></div></a>
     </div>
+    <div class="actions"><button class="btn sec" id="share">📤 Compartir</button></div>
     ${probHTML(p, true, nm(H), nm(A))}
     <div class="tabs" id="dtabs">
-      ${[['eventos','Eventos'],['stats','Estadísticas'],['alin','Alineaciones'],['h2h','Cara a cara']].map(([k,t]) => `<button data-t="${k}" class="${k===S.detTab?'on':''}">${t}</button>`).join('')}
+      ${[['h2h','Previa'],['eventos','Eventos'],['cm','Minuto a minuto'],['stats','Estadísticas'],['alin','Alineaciones']].map(([k,t]) => `<button data-t="${k}" class="${k===S.detTab?'on':''}">${t}</button>`).join('')}
     </div>
     <div id="dbody"></div>`;
   const body = () => {
     const t = S.detTab;
     if(t === 'eventos') return evHTML(d, H);
     if(t === 'stats') return statsHTML(d, H, A);
-    if(t === 'h2h') return h2hHTML(d, H, A);
+    if(t === 'h2h') return h2hHTML(d, H, A) + '<div id="bajas"></div>';
+    if(t === 'cm') return commHTML(d);
     return lineupHTML(d, H, A);
   };
-  const paintBody = () => { $('#dbody').innerHTML = body(); $('#dbody').querySelectorAll('[data-ath]').forEach(b => b.onclick = () => openPlayer(b.dataset.ath, b.dataset.tid, lg)) };
+  const paintBody = () => { $('#dbody').innerHTML = body(); $('#dbody').querySelectorAll('[data-ath]').forEach(b => b.onclick = () => openPlayer(b.dataset.ath, b.dataset.tid, lg)); if(S.detTab === 'h2h') bajasHTML(lg, H, A).then(x => { if($('#bajas')) $('#bajas').innerHTML = x }) };
   paintBody();
   det.querySelectorAll('#dtabs button').forEach(b => b.onclick = () => { S.detTab = b.dataset.t; det.querySelectorAll('#dtabs button').forEach(x=>x.classList.toggle('on',x===b)); paintBody() });
   det.querySelectorAll('.hero [data-team]').forEach(b => b.onclick = () => openTeam(b.dataset.team, lg));
+  $('#share').onclick = () => {
+    const txt = pre ? `⚽ ${nm(H)} vs ${nm(A)} · ${fmtDay(c.date)} a las ${fmtHour(c.date)} (${CMAP[lg]?.short || ''})` : `⚽ ${nm(H)} ${H.score ?? 0} - ${A.score ?? 0} ${nm(A)}${live ? ' (en directo, ' + (c.status?.displayClock || '') + ')' : ' (final)'} · ${CMAP[lg]?.short || ''}`;
+    const full = txt + '\nVía Fútbol EV: ' + location.origin + location.pathname;
+    if(navigator.share) navigator.share({text: full}).catch(() => {}); else { navigator.clipboard?.writeText(full); toast('Copiado para compartir') }
+  };
 }
 function evIcon(type, text){
   const s = (type + ' ' + text).toLowerCase();
@@ -660,7 +752,8 @@ function lineupHTML(d, H, A){
     return `<div><h4>${esc(t.team?.shortDisplayName||'')} <small>${esc(r.formation||'')}</small></h4>${pl.filter(p=>p.starter).map(row).join('')}
       <h4 style="margin-top:12px"><small>Suplentes</small></h4>${pl.filter(p=>!p.starter).map(row).join('')}</div>`;
   };
-  return `<div class="lu">${col(H)}${col(A)}</div><p class="hint">Toca un jugador para ver su ficha.</p>`;
+  const rH = ro.find(x => String(x.team?.id) === String(H.team?.id)) || {}, rA = ro.find(x => String(x.team?.id) === String(A.team?.id)) || {};
+  return pitchHTML(rH, tn(H.team?.shortDisplayName || ''), false) + pitchHTML(rA, tn(A.team?.shortDisplayName || ''), true) + `<div class="lu">${col(H)}${col(A)}</div><p class="hint">Toca un jugador para ver su ficha.</p>`;
 }
 function h2hHTML(d, H, A){
   const ser = (d.headToHeadGames || d.seasonseries || []).find(s => /head/i.test(s.type || s.seriesLabel || '')) || (d.seasonseries || [])[0];
@@ -686,6 +779,86 @@ function h2hHTML(d, H, A){
     }).join('');
   }
   return html || '<div class="empty">Sin datos de enfrentamientos previos.</div>';
+}
+
+
+/* ---------- minuto a minuto (traducido) ---------- */
+function trComm(t){
+  let m;
+  const R = [
+    [/^Goal!\s*(.+?)\.\s*(.+?) \((.+?)\).*/i, (_, s, p, tm) => `⚽ ¡GOL! ${s}. Marca ${p} (${tm}).`],
+    [/^Own Goal by (.+?), (.+?)\.\s*(.+)/i, (_, p, tm, s) => `⚽ Gol en propia puerta de ${p} (${tm}). ${s}`],
+    [/^Attempt missed\.\s*(.+?) \((.+?)\).*/i, (_, p, tm) => `Disparo fuera de ${p} (${tm}).`],
+    [/^Attempt saved\.\s*(.+?) \((.+?)\).*/i, (_, p, tm) => `Disparo de ${p} (${tm}), lo para el portero.`],
+    [/^Attempt blocked\.\s*(.+?) \((.+?)\).*/i, (_, p, tm) => `Disparo de ${p} (${tm}), bloqueado.`],
+    [/^(.+?) \((.+?)\) hits the (?:left |right )?(?:post|bar).*/i, (_, p, tm) => `¡Al palo! Disparo de ${p} (${tm}).`],
+    [/^Corner,\s*(.+?)\.\s*Conceded by (.+?)\./i, (_, tm, p) => `Córner para ${tm}. Lo provoca ${p}.`],
+    [/^Offside,\s*(.+?)\.\s*(.+?) is caught offside\./i, (_, tm, p) => `Fuera de juego de ${p} (${tm}).`],
+    [/^Foul by (.+?) \((.+?)\)\./i, (_, p, tm) => `Falta de ${p} (${tm}).`],
+    [/^(.+?) \((.+?)\) wins a free kick.*/i, (_, p, tm) => `${p} (${tm}) recibe una falta.`],
+    [/^(.+?) \((.+?)\) is shown the yellow card.*/i, (_, p, tm) => `🟨 Tarjeta amarilla para ${p} (${tm}).`],
+    [/^(.+?) \((.+?)\) is shown the red card.*/i, (_, p, tm) => `🟥 Tarjeta roja para ${p} (${tm}).`],
+    [/^(.+?) \((.+?)\) is shown the second yellow card.*/i, (_, p, tm) => `🟥 Segunda amarilla y expulsión de ${p} (${tm}).`],
+    [/^Substitution,\s*(.+?)\.\s*(.+?) replaces (.+?)(?: because of an injury)?\.$/i, (_, tm, a, b) => `🔁 Cambio en ${tm}: entra ${a} por ${b}.`],
+    [/^Hand ball by (.+?) \((.+?)\)\./i, (_, p, tm) => `Mano de ${p} (${tm}).`],
+    [/^Penalty conceded by (.+?) \((.+?)\).*/i, (_, p, tm) => `❗ Penalti cometido por ${p} (${tm}).`],
+    [/^Penalty (.+?)\.\s*(.+?) draws a foul.*/i, (_, tm, p) => `❗ Penalti a favor de ${tm}: falta sobre ${p}.`],
+    [/^Penalty missed!.*?(.+?) \((.+?)\).*/i, (_, p, tm) => `❌ ¡Penalti fallado por ${p} (${tm})!`],
+    [/^Penalty saved!.*?(.+?) \((.+?)\).*/i, (_, p, tm) => `🧤 ¡Penalti parado! Lanzaba ${p} (${tm}).`],
+    [/^Delay in match because of an injury (.+?) \((.+?)\)\./i, (_, p, tm) => `Partido detenido por lesión de ${p} (${tm}).`],
+    [/^Delay in match.*/i, () => 'Partido detenido.'],
+    [/^Delay over\..*/i, () => 'Se reanuda el juego.'],
+    [/^Lineups are announced.*/i, () => 'Alineaciones confirmadas, los jugadores calientan.'],
+    [/^First Half begins\./i, () => '▶️ Empieza la primera parte.'],
+    [/^First Half ends,\s*(.+)\./i, (_, s) => `⏸️ Descanso: ${s}.`],
+    [/^Second Half begins\s*(.+)?\./i, (_, s) => `▶️ Empieza la segunda parte${s ? ': ' + s : ''}.`],
+    [/^Second Half ends,\s*(.+)\./i, (_, s) => `🏁 Final de la segunda parte: ${s}.`],
+    [/^Match ends,\s*(.+)\./i, (_, s) => `🏁 Final del partido: ${s}.`],
+    [/^VAR Decision: No Goal (.+)\./i, (_, s) => `📺 VAR: no es gol. ${s}.`],
+    [/^VAR Decision: Goal (.+)\./i, (_, s) => `📺 VAR: gol válido. ${s}.`],
+    [/^VAR Decision: Penalty (.+)\./i, (_, s) => `📺 VAR: penalti. ${s}.`],
+    [/^VAR Decision: (.+)/i, (_, s) => `📺 Decisión VAR: ${s}`],
+    [/^GOAL OVERTURNED BY VAR:\s*(.+?) \((.+?)\).*/i, (_, p, tm) => `📺 Gol anulado por el VAR a ${p} (${tm}).`],
+    [/^Dangerous play by (.+?) \((.+?)\)\./i, (_, p, tm) => `Juego peligroso de ${p} (${tm}).`],
+  ];
+  for(const [re, f] of R){ if((m = t.match(re))) return f(...m) }
+  return t;
+}
+function commHTML(d){
+  const cm = d.commentary || [];
+  if(!cm.length) return '<div class="empty">La narración aparece cuando empieza el partido.</div>';
+  return [...cm].reverse().map(c => { const t = trComm(c.text || ''); return `<div class="cm${/GOL|gol\b/.test(t) && /⚽/.test(t) ? ' goal' : ''}"><b>${esc(c.time?.displayValue || '')}</b><span>${esc(t)}</span></div>` }).join('') + '<p class="hint">Narración de ESPN traducida automáticamente.</p>';
+}
+/* ---------- bajas (lesionados) ---------- */
+async function bajasHTML(lg, H, A){
+  try{
+    const [rh, ra] = await Promise.all([H, A].map(t => cached('ro:'+lg+t.team?.id, 600000, () => get(`${API}${lg}/teams/${t.team?.id}/roster`))));
+    const list = (r, t) => (r.athletes || []).filter(a => a.injuries?.length).map(a => `<div class="inj">🚑 <b>${esc(a.displayName)}</b><small>${esc(tn(t.team?.shortDisplayName || ''))}</small></div>`).join('');
+    const x = list(rh, H) + list(ra, A);
+    return `<div class="grp">Bajas por lesión</div>` + (x || '<p class="hint" style="text-align:left">Sin lesionados conocidos.</p>');
+  }catch{ return '' }
+}
+/* ---------- alineación en el campo ---------- */
+function rowOf(abbr){
+  const a = String(abbr||'').toUpperCase();
+  if(a === 'G' || a === 'GK') return 0;
+  if(/^(CD|CB|LB|RB|SW|LWB|RWB|D)/.test(a)) return 1;
+  if(/^(DM|CDM)/.test(a)) return 2;
+  if(/^(AM|CAM|LW|RW)/.test(a)) return 4;
+  if(/^(F|CF|ST|LF|RF|S)/.test(a)) return 5;
+  return 3;
+}
+const sideOf = a => { a = String(a||'').toUpperCase(); return /-L$|^L/.test(a) ? 0 : /-R$|^R/.test(a) ? 2 : 1 };
+function pitchHTML(r, name, away){
+  const st = (r.roster || []).filter(p => p.starter);
+  if(st.length < 11 || !r.formation) return '';
+  const digits = String(r.formation).split('-').map(Number).filter(Boolean);
+  const sorted = [...st].sort((a,b) => rowOf(a.position?.abbreviation) - rowOf(b.position?.abbreviation) || (+a.formationPlace||0) - (+b.formationPlace||0));
+  const rows = [[sorted[0]]]; let i = 1;
+  digits.forEach(n => { rows.push(sorted.slice(i, i + n)); i += n });
+  rows.forEach(rw => rw.sort((a,b) => sideOf(a.position?.abbreviation) - sideOf(b.position?.abbreviation)));
+  const ord = away ? rows : [...rows].reverse();
+  return `<div class="pitch${away ? ' away' : ''}"><div class="side">${esc(name)} · ${esc(r.formation)}</div>${ord.map(rw => `<div class="prow2">${rw.map(p => `<span class="pp"><i>${esc(p.jersey || '')}</i>${esc((p.athlete?.shortName || p.athlete?.displayName || '').replace(/^\w\.\s*/,''))}</span>`).join('')}</div>`).join('')}</div>`;
 }
 
 /* ---------- Wikipedia (entrenador y fotos) ---------- */
@@ -762,6 +935,7 @@ function openTeam(tid, lg, season){
         </div>
         ${national ? `<div class="card" id="natbox"><h3>🌍 Selección</h3>${natStatsHTML(evs, tid)}<p id="fifapos" style="margin-top:8px"></p></div>` : ''}
         <div class="card" id="coachbox"><h3>👔 ${national ? 'Seleccionador' : 'Entrenador'}</h3><div class="spin" style="margin:10px auto"></div></div>
+        <div class="actions"><button class="btn sec" id="ics">📅 Añadir partidos al calendario</button></div>
         <div class="tabs" id="ttabs"><button data-t="pl" class="on">Plantilla (${ath.length})</button><button data-t="cal">Partidos</button></div>
         <div id="tbody"></div>`;
       $('#favbtn').onclick = () => {
@@ -784,6 +958,7 @@ function openTeam(tid, lg, season){
         $('#tbody').querySelectorAll('.match').forEach(b => b.onclick = () => openMatch(b.dataset.id, b.dataset.lg));
       };
       paint('pl');
+      $('#ics').onclick = () => exportICS(tn(t.displayName), next);
       getStandings(lg).then(st => { for(const g of st.groups){ const row = g.rows.find(x => String(x.id) === String(tid)); if(row && $('#tpos')){ $('#tpos').textContent = `${row.pos}º en ${CMAP[lg]?.short || ''}${st.groups.length > 1 ? ' · ' + grpName(g.name) : ''} · ${row.pts} pts`; break } } }).catch(() => {});
       det.querySelectorAll('#ttabs button').forEach(b => b.onclick = () => { det.querySelectorAll('#ttabs button').forEach(x => x.classList.toggle('on', x===b)); paint(b.dataset.t) });
       if(national) fifaPos(tn(t.displayName)).then(x => { if(x && $('#fifapos')) $('#fifapos').innerHTML = `Ranking FIFA: <b style="color:var(--txt)">${x.pos}º</b> · ${esc(x.pts)} puntos` });
@@ -798,6 +973,19 @@ function openTeam(tid, lg, season){
     }catch(err){ det.innerHTML = `<div class="err">No se pudo cargar el equipo.<br><small>${esc(err.message)}</small></div>` }
   });
 }
+
+function exportICS(team, evs){
+  if(!evs.length) return toast('No hay próximos partidos para añadir');
+  const f = d => new Date(d).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Futbol EV//ES','CALSCALE:GREGORIAN'];
+  evs.forEach(e => { const s = new Date(e.date), en = new Date(s.getTime() + 2*3600e3);
+    lines.push('BEGIN:VEVENT', `UID:${e.id}@futbolev`, `DTSTAMP:${f(new Date())}`, `DTSTART:${f(s)}`, `DTEND:${f(en)}`, `SUMMARY:⚽ ${e.home.name} - ${e.away.name}`, `DESCRIPTION:${CMAP[e.lg]?.name || ''}`, e.venue ? `LOCATION:${e.venue}` : '', 'END:VEVENT') });
+  lines.push('END:VCALENDAR');
+  const blob = new Blob([lines.filter(Boolean).join('\r\n')], {type:'text/calendar'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `partidos-${team.replace(/\W+/g,'-').toLowerCase()}.ics`; document.body.appendChild(a); a.click(); a.remove();
+  toast('Calendario descargado: ábrelo para añadir los partidos');
+}
+
 function trStanding(s){ return String(s||'').replace(/(\d+)(st|nd|rd|th) in /,'$1º en ').replace('Spanish ','') }
 function trRecord(r){ const m = String(r||'').match(/^(\d+)-(\d+)-(\d+)$/); return m ? `${m[1]}V · ${m[2]}E · ${m[3]}D` : (r || '—') }
 
@@ -921,7 +1109,7 @@ async function palmaresHTML(lg){
 }
 
 /* ---------- noticias (Marca, sin anuncios: solo titulares) ---------- */
-const NEWS = [['portada','Portada'],['futbol/primera-division','1ª División'],['futbol/segunda-division','2ª División'],['futbol/champions-league','Champions'],['futbol/seleccion','Selección']];
+const NEWS = [['portada','Portada'],['futbol/primera-division','1ª División'],['futbol/segunda-division','2ª División'],['futbol/mercado-fichajes','Fichajes'],['futbol/champions-league','Champions'],['futbol/futbol-internacional','Internacional'],['futbol/seleccion','Selección']];
 async function viewNews(){
   const v = $('#view');
   S.newsTab = S.newsTab || 'portada';
@@ -970,6 +1158,31 @@ function openCareerOnly(aid, name){
   });
 }
 
+
+/* ---------- buscador ---------- */
+const LEAGUE_SLUG = {'LALIGA':'esp.1','LALIGA 2':'esp.2','LaLiga 2':'esp.2','Premier League':'eng.1','English Premier League':'eng.1','Serie A':'ita.1','Italian Serie A':'ita.1','Bundesliga':'ger.1','German Bundesliga':'ger.1','Ligue 1':'fra.1','French Ligue 1':'fra.1','Liga F':'esp.w.1'};
+function openSearch(){
+  openSheet('Buscar', det => {
+    det.innerHTML = `<input type="text" id="q" placeholder="Equipo o jugador…" autocomplete="off" style="margin-top:6px"><div id="sr"><p class="hint">Escribe al menos 3 letras.</p></div>`;
+    const q = $('#q'); setTimeout(() => q.focus(), 100);
+    let t;
+    q.oninput = () => { clearTimeout(t); t = setTimeout(async () => {
+      const v = q.value.trim(); if(v.length < 3) return;
+      $('#sr').innerHTML = '<div class="spin"></div>';
+      try{
+        const d = await get(`https://site.web.api.espn.com/apis/search/v2?query=${encodeURIComponent(v)}&limit=12&type=team,player`);
+        const items = (d.results || []).filter(r => r.type === 'team' || r.type === 'player').flatMap(r => (r.contents || []).map(c => ({...c, kind:r.type}))).filter(c => /s:600~/.test(c.uid || ''));
+        if(!items.length) return $('#sr').innerHTML = '<div class="empty">Sin resultados.</div>';
+        $('#sr').innerHTML = items.map((c, i) => `<button class="sres" data-i="${i}">${c.kind === 'team' ? `<img src="${esc(c.image?.default || '')}" alt="">` : `<span class="ph" style="width:30px;height:30px;font-size:11px">${initials(c.displayName)}</span>`}<div><b>${esc(tn(c.displayName))}</b><small>${c.kind === 'team' ? 'Equipo' : 'Jugador'} · ${esc(c.subtitle || c.description || '')}</small></div></button>`).join('');
+        $('#sr').querySelectorAll('.sres').forEach(b => b.onclick = () => {
+          const c = items[+b.dataset.i]; const id = ((c.uid || '').match(/~[ta]:(\d+)/) || [])[1];
+          if(c.kind === 'team') openTeam(id, LEAGUE_SLUG[c.subtitle] || 'esp.1'); else openCareerOnly(id, c.displayName);
+        });
+      }catch(e){ $('#sr').innerHTML = `<div class="err">${esc(e.message)}</div>` }
+    }, 350) };
+  });
+}
+
 /* ---------- favoritos / ajustes ---------- */
 async function viewFavs(){
   const v = $('#view');
@@ -984,12 +1197,18 @@ async function viewFavs(){
       : perm==='denied' ? `<p>Están bloqueados. Actívalos en Ajustes del móvil → Notificaciones → Fútbol EV.</p>`
       : `<button class="btn" id="non">🔔 Activar avisos de gol</button>`}
   </div>
+  <div class="card"><h3>🔔 Qué avisos quieres</h3>
+    ${[['gol','⚽ Goles'],['inicio','▶️ Inicio del partido'],['descanso','⏸️ Descanso'],['final','🏁 Resultado final'],['roja','🟥 Tarjetas rojas']].map(([k,t]) => `<label class="chk">${t}<input type="checkbox" data-al="${k}" ${S.alerts[k]?'checked':''}></label>`).join('')}
+  </div>
+  <div class="card"><h3>🌓 Apariencia</h3><div class="tabs" id="thm" style="margin:4px 0 0">${[['auto','Automático'],['light','☀️ Día'],['dark','🌙 Noche']].map(([k,t]) => `<button data-th="${k}" class="${(localStorage.getItem('theme')||'auto')===k?'on':''}">${t}</button>`).join('')}</div><p>«Automático» sigue el modo del móvil.</p></div>
   <div class="card"><h3>⭐ Tus equipos (<span id="nfav">${S.favs.length}</span>)</h3><p>Toca para marcar o desmarcar. También puedes usar la ★ dentro de cualquier equipo.</p>
     <div class="tabs" id="favSeg">${['esp.1','esp.2'].map(l => `<button data-l="${l}" class="${l==='esp.1'?'on':''}">${CMAP[l].short}</button>`).join('')}<button data-l="mine">Mis favoritos</button></div>
     <div class="teams" id="teams" style="margin-top:10px"><div class="spin"></div></div>
   </div>
   ${!standalone ? `<div class="card"><h3>➕ Instalar en pantalla de inicio</h3><p>${ios ? 'Safari → botón Compartir → «Añadir a pantalla de inicio».' : 'Menú ⋮ de Chrome → «Instalar app».'}</p></div>` : ''}
   <div class="card"><h3>ℹ️ Fuentes</h3><p>Partidos, clasificaciones, plantillas y estadísticas: ESPN. Entrenadores, fotos, palmarés y ranking FIFA: Wikipedia. Noticias: MARCA. Probabilidades: modelo estadístico propio.</p></div>`;
+  v.querySelectorAll('[data-al]').forEach(i => i.onchange = () => { S.alerts[i.dataset.al] = i.checked; save('alerts', S.alerts) });
+  v.querySelectorAll('[data-th]').forEach(b => b.onclick = () => { setTheme(b.dataset.th); v.querySelectorAll('[data-th]').forEach(x => x.classList.toggle('on', x===b)) });
   const on = $('#non'); if(on) on.onclick = enableNotif;
   const t = $('#nt'); if(t) t.onclick = () => notify('⚽ Prueba', 'Así te llegarán los goles de tus equipos');
   const off = $('#noff'); if(off) off.onclick = () => { S.notif = false; localStorage.setItem('notif','0'); render() };
@@ -1031,13 +1250,25 @@ function checkGoals(evs){
   let changed = false;
   for(const e of evs){
     if(!isFav(e.home.id) && !isFav(e.away.id)) continue;
+    // inicio / descanso / final / rojas
+    const vs = `${e.home.name} ${+e.home.score||0} - ${+e.away.score||0} ${e.away.name}`;
+    const ht = /half|HT|descanso/i.test(e.detail) && e.state === 'in';
+    const reds = e.reds || 0;
+    const o = S.evst[e.id];
+    if(o){
+      if(S.alerts.inicio && o.s === 'pre' && e.state === 'in') notify('▶️ Empieza el partido', `${e.home.name} - ${e.away.name}`, 'ini-'+e.id);
+      if(S.alerts.descanso && !o.ht && ht) notify('⏸️ Descanso', vs, 'ht-'+e.id);
+      if(S.alerts.final && o.s !== 'post' && e.state === 'post') notify('🏁 Final', vs, 'fin-'+e.id);
+      if(S.alerts.roja && reds > (o.r || 0)) notify('🟥 Tarjeta roja', vs, 'red-'+e.id+'-'+reds);
+    }
+    if(!o || o.s !== e.state || o.ht !== ht || (o.r||0) !== reds){ S.evst[e.id] = {s:e.state, ht, r:reds}; changed = true }
     if(e.state === 'pre') continue;
     const now = `${+e.home.score||0}-${+e.away.score||0}`, prev = S.scores[e.id];
     if(prev === undefined){ S.scores[e.id] = now; changed = true; continue }
     if(prev !== now){
       const [ph, pa] = prev.split('-').map(Number), nh = +e.home.score||0, na = +e.away.score||0;
       const sc = nh > ph ? e.home : na > pa ? e.away : null;
-      if(sc){
+      if(sc && S.alerts.gol){
         const last = e.goals[e.goals.length-1];
         const who = last?.athletesInvolved?.[0]?.displayName, min = last?.clock?.displayValue;
         notify(`${isFav(sc.id)?'⚽ ¡GOL del':'😬 Gol del'} ${sc.name}!`, `${e.home.name} ${nh} - ${na} ${e.away.name}${who?` · ${who}`:''}${min?` (${min})`:''}`, 'gol-'+e.id+'-'+now);
@@ -1046,13 +1277,14 @@ function checkGoals(evs){
       S.scores[e.id] = now; changed = true;
     }
   }
-  if(changed){ const k = Object.keys(S.scores); if(k.length > 300) k.slice(0, k.length-300).forEach(x => delete S.scores[x]); save('scores', S.scores) }
+  if(changed){ const k = Object.keys(S.scores); if(k.length > 300) k.slice(0, k.length-300).forEach(x => delete S.scores[x]); save('scores', S.scores);
+    const k2 = Object.keys(S.evst); if(k2.length > 300) k2.slice(0, k2.length-300).forEach(x => delete S.evst[x]); save('evst', S.evst) }
 }
 let timer = null;
 async function pollFavs(){
   let anyLive = false;
   if(S.favs.length){
-    const lgs = [...new Set([...S.favs.map(f => f.league || 'esp.1'), 'esp.copa_del_rey', 'uefa.champions', 'uefa.europa'])];
+    const lgs = [...new Set([...S.favs.map(f => f.league || 'esp.1'), 'esp.copa_del_rey', 'esp.super_cup', 'uefa.champions', 'uefa.europa'])];
     await Promise.all(lgs.map(async lg => {
       try{
         const evs = (await sbDays(lg, [new Date()])).map(e => norm(e, lg));
@@ -1083,6 +1315,17 @@ function render(keepScroll){
   if(S.view === 'news') return viewNews();
   return viewFavs();
 }
+function setTheme(m){
+  localStorage.setItem('theme', m);
+  const dark = m === 'dark' || (m === 'auto' && !matchMedia('(prefers-color-scheme: light)').matches);
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  $('#theme').textContent = dark ? '🌙' : '☀️';
+  document.querySelector('meta[name=theme-color]').setAttribute('content', dark ? '#0b1220' : '#f2f4f8');
+}
+setTheme(localStorage.getItem('theme') || 'auto');
+matchMedia('(prefers-color-scheme: light)').addEventListener?.('change', () => { if((localStorage.getItem('theme') || 'auto') === 'auto') setTheme('auto') });
+$('#theme').onclick = () => { const cur = document.documentElement.dataset.theme; setTheme(cur === 'dark' ? 'light' : 'dark'); toast(cur === 'dark' ? '☀️ Modo día' : '🌙 Modo noche') };
+$('#search').onclick = openSearch;
 document.querySelectorAll('#nav button').forEach(b => b.onclick = () => { S.view = b.dataset.v; render() });
 $('#refresh').onclick = () => { S.cache = {}; render(); schedule(true) };
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') schedule(true) });
