@@ -1,0 +1,23 @@
+name: Vigilante de goles
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # GitHub lo lanza cada ~5 min (puede retrasarse)
+  workflow_dispatch:
+concurrency: { group: goles, cancel-in-progress: false }
+jobs:
+  vigilar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache/restore@v4
+        with: { path: estado.json, key: goles-${{ github.run_id }}, restore-keys: goles- }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: node vigilante/goles.mjs
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          FAVORITOS: ${{ vars.FAVORITOS }}
+      - uses: actions/cache/save@v4
+        if: always()
+        with: { path: estado.json, key: goles-${{ github.run_id }} }
